@@ -21,20 +21,42 @@ function setAuthenticated(status) {
 
 // Redirect to login if not authenticated (for protected pages)
 function requireAuth() {
-  if (!isAuthenticated() && window.location.pathname !== '/index.html' && !window.location.pathname.includes('index.html')) {
-    // Allow access to protected pages only if authenticated
-    const currentPage = window.location.pathname.split('/').pop();
-    if (currentPage !== '' && currentPage !== 'index.html') {
-      // Uncomment to enforce authentication
-      // window.location.href = 'index.html';
-    }
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+
+  // Allow login page without authentication
+  if (currentPage === 'index.html' || currentPage === '') {
+    return; // Login page is always accessible
   }
+
+  // Protected pages: redirect to login if not authenticated
+  if (!isAuthenticated()) {
+    window.location.href = 'index.html';
+  }
+}
+
+// Logout function - clears authentication and redirects to login
+function logout() {
+  setAuthenticated(false);
+  window.location.href = 'index.html';
 }
 
 // Initialize global functionality on page load
 document.addEventListener('DOMContentLoaded', function() {
-  // Run any initialization code here
-  console.log('LovieProject loaded');
+  // Check authentication on protected pages
+  requireAuth();
+
+  // Add logout functionality to logout links
+  const logoutLinks = document.querySelectorAll('a[href="index.html"]');
+  logoutLinks.forEach(link => {
+    if (link.textContent.toLowerCase().includes('logout')) {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        logout();
+      });
+    }
+  });
+
+  console.log('LovieProject initialized. Authenticated:', isAuthenticated());
 });
 
 // Log messages for debugging

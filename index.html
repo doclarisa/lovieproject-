@@ -5,61 +5,180 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LovieProject - Login</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    body.login-page {
+      background-image: url('images/homepagewomen.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow-y: auto;
+    }
+
+    body.login-page::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(43, 122, 120, 0.3);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .login-container {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 500px;
+      padding: var(--space-md);
+    }
+
+    .login-card {
+      background: white;
+      border-radius: var(--radius-xl);
+      padding: var(--space-3xl);
+      box-shadow: var(--elevation-modal);
+      text-align: center;
+      animation: fadeInUp 0.6s ease;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .login-logo {
+      font-family: var(--font-serif);
+      font-size: 3.5rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, var(--color-burgundy) 0%, var(--color-teal) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: var(--space-lg);
+      line-height: 1;
+    }
+
+    .login-tagline {
+      font-size: var(--font-size-lg);
+      color: var(--color-dark-gray);
+      margin-bottom: var(--space-2xl);
+      font-weight: 500;
+    }
+
+    #loginForm {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-lg);
+    }
+
+    #loginForm input {
+      padding: var(--space-md) !important;
+      font-size: var(--font-size-base) !important;
+      border: 2px solid var(--color-light-gray) !important;
+      border-radius: var(--radius-md) !important;
+      transition: all var(--transition-normal) !important;
+    }
+
+    #loginForm input:focus {
+      border-color: var(--color-burgundy) !important;
+      box-shadow: 0 0 0 3px rgba(139, 58, 98, 0.1) !important;
+    }
+
+    #loginForm button {
+      margin-bottom: 0 !important;
+    }
+
+    .error-message {
+      color: var(--color-error);
+      font-size: var(--font-size-sm);
+      margin-top: var(--space-md);
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: all var(--transition-normal);
+    }
+
+    .error-message.show {
+      opacity: 1;
+      max-height: 100px;
+    }
+
+    #loginForm.shake input {
+      animation: shake 0.4s ease;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-8px); }
+      75% { transform: translateX(8px); }
+    }
+  </style>
 </head>
-<body>
-  <!--
-    SHARED NAV BLOCK - Copy this to other pages:
-    <nav>
-      <ul>
-        <li><a href="home.html">Home</a></li>
-        <li><a href="submit.html">Add Your Profile</a></li>
-        <li><a href="index.html">Logout</a></li>
-      </ul>
-    </nav>
-  -->
+<body class="login-page">
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-logo">Lovie</div>
 
-  <!--
-    SHARED FOOTER BLOCK - Copy this to other pages:
-    <footer>
-      <p>&copy; 2024 LovieProject. Celebrating creative women 55+.</p>
-      <p><a href="mailto:info@lovieproject.com">Contact</a> | <a href="#privacy">Privacy</a></p>
-    </footer>
-  -->
+      <p class="login-tagline">
+        <span lang="en">Celebrating creative women 55+</span>
+        <span lang="ru">Праздновать творческих женщин 55+</span>
+      </p>
 
-  <main class="container">
-    <div style="margin: var(--space-2xl) 0 var(--space-3xl) 0; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--elevation-hover);">
-      <img src="images/homepagewomen.jpg" alt="Creative women celebrating together" style="width: 100%; height: auto; display: block;">
-    </div>
-
-    <div style="text-align: center; padding: var(--space-2xl) 0;">
-      <h1>LovieProject</h1>
-      <p>Celebrating creative Russian-speaking women 55+</p>
-
-      <form id="loginForm" style="margin-top: var(--space-xl); max-width: 300px; margin-left: auto; margin-right: auto;">
+      <form id="loginForm">
         <input
           type="password"
           id="password"
           placeholder="Enter password"
           required
-          style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem;"
+          autofocus
         >
-        <button type="submit" class="btn" style="width: 100%;">Enter</button>
+        <button type="submit" class="btn btn-full">
+          <span lang="en">Enter</span>
+          <span lang="ru">Войти</span>
+        </button>
+        <div class="error-message" id="errorMessage">
+          <span lang="en">✗ Incorrect password. Please try again.</span>
+          <span lang="ru">✗ Неправильный пароль. Пожалуйста, попробуйте еще раз.</span>
+        </div>
       </form>
     </div>
-  </main>
+  </div>
 
   <script src="script.js"></script>
   <script>
     document.getElementById('loginForm').addEventListener('submit', function(e) {
       e.preventDefault();
       const password = document.getElementById('password').value;
+      const errorMessage = document.getElementById('errorMessage');
+      const form = document.getElementById('loginForm');
 
-      // TODO: Replace with actual password validation
-      if (password === 'lovie2024') {
+      if (password === 'superbabushka') {
         setAuthenticated(true);
+        errorMessage.classList.remove('show');
+        form.classList.remove('shake');
         window.location.href = 'home.html';
       } else {
-        alert('Incorrect password. Please try again.');
+        errorMessage.classList.add('show');
+        form.classList.add('shake');
+        document.getElementById('password').value = '';
+
+        // Remove shake class after animation
+        setTimeout(() => {
+          form.classList.remove('shake');
+        }, 400);
       }
     });
   </script>
