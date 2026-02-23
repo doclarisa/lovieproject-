@@ -5,57 +5,426 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Profile - LovieProject</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .nav-brand {
+      font-family: var(--font-serif);
+      font-size: 1.75rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--color-burgundy) 0%, var(--color-teal) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .language-toggle {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      border-radius: var(--radius-full);
+      padding: var(--space-sm) var(--space-lg);
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition-normal);
+    }
+
+    .language-toggle:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .profile-hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: var(--space-3xl);
+      padding: var(--space-3xl);
+      border-radius: var(--radius-xl);
+      margin-bottom: var(--space-3xl);
+      color: white;
+    }
+
+    .profile-hero-image {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: var(--radius-xl);
+      box-shadow: var(--elevation-modal);
+    }
+
+    .profile-hero-content h1 {
+      font-size: var(--font-size-4xl);
+      font-weight: 900;
+      color: white;
+      margin-bottom: var(--space-lg);
+      letter-spacing: -0.02em;
+    }
+
+    .profile-location {
+      font-size: var(--font-size-lg);
+      margin-bottom: var(--space-lg);
+      opacity: 0.95;
+    }
+
+    .profile-hero .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+    }
+
+    .profile-hero .pill-badge {
+      background: rgba(255, 255, 255, 0.25);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .bio-section {
+      max-width: 800px;
+      margin: var(--space-3xl) auto;
+      padding: var(--space-2xl);
+      background: white;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--elevation-card);
+    }
+
+    .bio-section h2 {
+      font-size: var(--font-size-2xl);
+      margin-bottom: var(--space-lg);
+      color: var(--color-burgundy);
+    }
+
+    .bio-section p {
+      font-size: var(--font-size-lg);
+      line-height: var(--line-height-relaxed);
+      color: var(--color-dark-gray);
+      margin-bottom: var(--space-lg);
+    }
+
+    .links-section {
+      max-width: 800px;
+      margin: var(--space-3xl) auto;
+      padding: var(--space-2xl);
+      background: white;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--elevation-card);
+    }
+
+    .links-section h2 {
+      font-size: var(--font-size-2xl);
+      margin-bottom: var(--space-xl);
+      color: var(--color-burgundy);
+    }
+
+    .social-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-lg);
+      margin-bottom: var(--space-lg);
+    }
+
+    .social-link {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: var(--space-md) var(--space-lg);
+      background: var(--color-cream);
+      border: 2px solid var(--color-light-gray);
+      border-radius: var(--radius-lg);
+      text-decoration: none;
+      color: var(--color-burgundy);
+      font-weight: 600;
+      transition: all var(--transition-normal);
+    }
+
+    .social-link:hover {
+      background: var(--color-burgundy);
+      color: white;
+      border-color: var(--color-burgundy);
+    }
+
+    .gallery-section {
+      max-width: 1000px;
+      margin: var(--space-3xl) auto;
+      padding: var(--space-2xl);
+      background: white;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--elevation-card);
+    }
+
+    .gallery-section h2 {
+      font-size: var(--font-size-2xl);
+      margin-bottom: var(--space-xl);
+      color: var(--color-burgundy);
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--space-lg);
+    }
+
+    .gallery-item {
+      aspect-ratio: 1;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--elevation-card);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: var(--space-lg);
+      color: white;
+      font-weight: 600;
+      text-align: center;
+      font-family: var(--font-serif);
+      transition: all var(--transition-normal);
+    }
+
+    .gallery-item:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--elevation-hover);
+    }
+
+    .contact-section {
+      text-align: center;
+      margin: var(--space-3xl) 0;
+    }
+
+    .contact-btn {
+      padding: var(--space-lg) var(--space-3xl) !important;
+      font-size: var(--font-size-lg) !important;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin: var(--space-lg) 0;
+      color: var(--color-burgundy);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: var(--font-size-lg);
+      transition: all var(--transition-normal);
+    }
+
+    .back-link:hover {
+      gap: var(--space-md);
+      color: var(--color-burgundy-dark);
+    }
+
+    @media (max-width: 768px) {
+      .profile-hero {
+        grid-template-columns: 1fr;
+        gap: var(--space-2xl);
+        padding: var(--space-2xl);
+      }
+
+      .profile-hero-content h1 {
+        font-size: var(--font-size-2xl);
+      }
+
+      .gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
 </head>
 <body>
-  <!--
-    SHARED NAV BLOCK - Copy and paste below:
-    <nav>
-      <ul>
-        <li><a href="home.html">Home</a></li>
-        <li><a href="submit.html">Add Your Profile</a></li>
-        <li><a href="index.html">Logout</a></li>
-      </ul>
-    </nav>
-  -->
-
   <nav>
-    <ul>
-      <li><a href="home.html">Home</a></li>
-      <li><a href="submit.html">Add Your Profile</a></li>
-      <li><a href="index.html">Logout</a></li>
+    <ul style="display: flex; justify-content: space-between; align-items: center; padding: 0 var(--space-md); list-style: none;">
+      <li style="flex: 1;">
+        <a href="home.html" style="color: white; text-decoration: none; font-weight: 900; font-size: 1.5rem;">
+          <span class="nav-brand">Lovie</span>
+        </a>
+      </li>
+      <li style="flex: 1; text-align: center;">
+        <a href="home.html" style="color: white; text-decoration: none; font-weight: 600; font-size: var(--font-size-sm); text-transform: uppercase; letter-spacing: 0.05em;">
+          <span lang="en">Home</span>
+          <span lang="ru">Главная</span>
+        </a>
+      </li>
+      <li style="flex: 1; text-align: right; display: flex; justify-content: flex-end; gap: var(--space-md);">
+        <button class="language-toggle" id="langToggle">
+          <span id="langText">РУССКИЙ</span>
+        </button>
+        <a href="index.html" style="color: var(--color-gold); text-decoration: none; font-weight: 600; font-size: var(--font-size-sm); text-transform: uppercase; letter-spacing: 0.05em;">
+          <span lang="en">Logout</span>
+          <span lang="ru">Выход</span>
+        </a>
+      </li>
     </ul>
   </nav>
 
   <main class="container">
-    <a href="home.html" style="color: #e74c3c; text-decoration: none; margin-bottom: 1rem; display: inline-block;">← Back to Gallery</a>
+    <a href="home.html" class="back-link">
+      ← <span lang="en">Back to Gallery</span><span lang="ru">← Вернуться в галерею</span>
+    </a>
 
-    <div id="profileContent" style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-      <!-- Profile details will be loaded here -->
-      <p>Loading profile...</p>
+    <!-- Hero Section -->
+    <div id="heroSection" class="profile-hero">
+      <!-- Profile image and content generated by JS -->
+    </div>
+
+    <!-- Bio Section -->
+    <div class="bio-section">
+      <h2><span lang="en">About</span><span lang="ru">О ней</span></h2>
+      <p lang="en" id="bioEn"></p>
+      <p lang="ru" id="bioRu"></p>
+    </div>
+
+    <!-- Links Section (conditionally shown) -->
+    <div id="linksSection" class="links-section" style="display: none;">
+      <h2><span lang="en">Connect</span><span lang="ru">Связаться</span></h2>
+      <div class="social-links" id="socialLinks"></div>
+    </div>
+
+    <!-- Gallery Section (conditionally shown) -->
+    <div id="gallerySection" class="gallery-section" style="display: none;">
+      <h2><span lang="en">Gallery</span><span lang="ru">Галерея</span></h2>
+      <div class="gallery-grid" id="galleryGrid"></div>
+    </div>
+
+    <!-- Contact Section -->
+    <div class="contact-section">
+      <a href="#" id="contactBtn" class="btn contact-btn" style="display: none;">
+        <span lang="en">✉ Write to Me</span>
+        <span lang="ru">✉ Написать мне</span>
+      </a>
     </div>
   </main>
-
-  <!--
-    SHARED FOOTER BLOCK - Copy and paste below:
-    <footer>
-      <p>&copy; 2024 LovieProject. Celebrating creative women 55+.</p>
-      <p><a href="mailto:info@lovieproject.com">Contact</a> | <a href="#privacy">Privacy</a></p>
-    </footer>
-  -->
 
   <footer>
     <p>&copy; 2024 LovieProject. Celebrating creative women 55+.</p>
     <p><a href="mailto:info@lovieproject.com">Contact</a> | <a href="#privacy">Privacy</a></p>
   </footer>
 
+  <script src="data.js"></script>
   <script src="script.js"></script>
   <script>
-    // Load profile based on URL parameter
-    // TODO: Implement profile detail loading logic
+    // Get profile ID from URL
+    function getProfileFromURL() {
+      const params = new URLSearchParams(window.location.search);
+      const id = parseInt(params.get('id'));
+
+      if (!id) {
+        window.location.href = 'home.html';
+        return null;
+      }
+
+      const profile = profiles.find(p => p.id === id);
+      if (!profile) {
+        window.location.href = 'home.html';
+        return null;
+      }
+
+      return profile;
+    }
+
+    // Render profile page
+    function renderProfile(profile) {
+      // Hero Section
+      const heroSection = document.getElementById('heroSection');
+      const bgColor = profile.color;
+
+      heroSection.style.backgroundColor = bgColor;
+      heroSection.innerHTML = `
+        <div class="profile-hero-image" style="background-color: ${bgColor}; opacity: 0.8;"></div>
+        <div class="profile-hero-content">
+          <h1>${profile.name}</h1>
+          <div class="profile-location">
+            📍 ${profile.country}, ${profile.city}
+          </div>
+          <div class="tags">
+            ${profile.tags.map((tag, idx) => `
+              <span class="pill-badge">
+                ${tag}
+              </span>
+            `).join('')}
+          </div>
+        </div>
+      `;
+
+      // Bio Section
+      document.getElementById('bioEn').textContent = profile.fullBio.en;
+      document.getElementById('bioRu').textContent = profile.fullBio.ru;
+
+      // Links Section
+      const hasLinks = profile.website || profile.instagram || profile.phone;
+      if (hasLinks) {
+        const linksSection = document.getElementById('linksSection');
+        const socialsHTML = [];
+
+        if (profile.website) {
+          socialsHTML.push(`
+            <a href="${profile.website}" target="_blank" rel="noopener noreferrer" class="social-link">
+              🌐 <span lang="en">Website</span><span lang="ru">Вебсайт</span>
+            </a>
+          `);
+        }
+
+        if (profile.instagram) {
+          socialsHTML.push(`
+            <a href="${profile.instagram}" target="_blank" rel="noopener noreferrer" class="social-link">
+              📷 Instagram
+            </a>
+          `);
+        }
+
+        if (profile.phone) {
+          socialsHTML.push(`
+            <a href="tel:${profile.phone}" class="social-link">
+              📞 <span lang="en">Call</span><span lang="ru">Звонок</span>
+            </a>
+          `);
+        }
+
+        document.getElementById('socialLinks').innerHTML = socialsHTML.join('');
+        linksSection.style.display = 'block';
+      }
+
+      // Gallery Section
+      if (profile.gallery && profile.gallery.length > 0) {
+        const galleryGrid = document.getElementById('galleryGrid');
+        const galleryHTML = profile.gallery.map(item => `
+          <div class="gallery-item" style="background-color: ${item.color};">
+            ${item.title}
+          </div>
+        `).join('');
+        galleryGrid.innerHTML = galleryHTML;
+        document.getElementById('gallerySection').style.display = 'block';
+      }
+
+      // Contact Button
+      if (profile.email) {
+        const contactBtn = document.getElementById('contactBtn');
+        contactBtn.href = `mailto:${profile.email}`;
+        contactBtn.style.display = 'inline-block';
+      }
+
+      // Set page title
+      document.title = profile.name + ' - LovieProject';
+    }
+
+    // Language toggle
+    let currentLang = 'en';
+    const langToggle = document.getElementById('langToggle');
+    const langText = document.getElementById('langText');
+    const body = document.body;
+
+    langToggle.addEventListener('click', function() {
+      currentLang = currentLang === 'en' ? 'ru' : 'en';
+
+      if (currentLang === 'ru') {
+        body.classList.add('lang-ru');
+        langText.textContent = 'ENGLISH';
+      } else {
+        body.classList.remove('lang-ru');
+        langText.textContent = 'РУССКИЙ';
+      }
+    });
+
+    // Initialize page
     document.addEventListener('DOMContentLoaded', function() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const profileId = urlParams.get('id');
-      console.log('Loading profile:', profileId);
+      const profile = getProfileFromURL();
+      if (profile) {
+        renderProfile(profile);
+      }
     });
   </script>
 </body>
