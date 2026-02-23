@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LovieProject - Login</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!--
+    SHARED NAV BLOCK - Copy this to other pages:
+    <nav>
+      <ul>
+        <li><a href="home.html">Home</a></li>
+        <li><a href="submit.html">Add Your Profile</a></li>
+        <li><a href="index.html">Logout</a></li>
+      </ul>
+    </nav>
+  -->
+
+  <!--
+    SHARED FOOTER BLOCK - Copy this to other pages:
+    <footer>
+      <p>&copy; 2024 LovieProject. Celebrating creative women 55+.</p>
+      <p><a href="mailto:info@lovieproject.com">Contact</a> | <a href="#privacy">Privacy</a></p>
+    </footer>
+  -->
+
+  <main class="container">
+    <div style="text-align: center; padding: 4rem 0;">
+      <h1>LovieProject</h1>
+      <p>Celebrating creative Russian-speaking women 55+</p>
+
+      <form id="loginForm" style="margin-top: 2rem; max-width: 300px; margin-left: auto; margin-right: auto;">
+        <input
+          type="password"
+          id="password"
+          placeholder="Enter password"
+          required
+          style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem;"
+        >
+        <button type="submit" class="btn" style="width: 100%;">Enter</button>
+      </form>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const password = document.getElementById('password').value;
+
+      // TODO: Replace with actual password validation
+      if (password === 'lovie2024') {
+        setAuthenticated(true);
+        window.location.href = 'home.html';
+      } else {
+        alert('Incorrect password. Please try again.');
+      }
+    });
+  </script>
+</body>
+</html>

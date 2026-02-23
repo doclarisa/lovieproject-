@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home - LovieProject</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!--
+    SHARED NAV BLOCK - Copy and paste below:
+    <nav>
+      <ul>
+        <li><a href="home.html">Home</a></li>
+        <li><a href="submit.html">Add Your Profile</a></li>
+        <li><a href="index.html">Logout</a></li>
+      </ul>
+    </nav>
+  -->
+
+  <nav>
+    <ul>
+      <li><a href="home.html">Home</a></li>
+      <li><a href="submit.html">Add Your Profile</a></li>
+      <li><a href="index.html">Logout</a></li>
+    </ul>
+  </nav>
+
+  <main class="container">
+    <h1>Welcome to LovieProject</h1>
+    <p>Celebrating creative Russian-speaking women 55+ from around the world</p>
+
+    <div id="gallery" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 2rem; margin-top: 2rem;">
+      <!-- Profiles will be loaded here dynamically -->
+      <p>Loading profiles...</p>
+    </div>
+  </main>
+
+  <!--
+    SHARED FOOTER BLOCK - Copy and paste below:
+    <footer>
+      <p>&copy; 2024 LovieProject. Celebrating creative women 55+.</p>
+      <p><a href="mailto:info@lovieproject.com">Contact</a> | <a href="#privacy">Privacy</a></p>
+    </footer>
+  -->
+
+  <footer>
+    <p>&copy; 2024 LovieProject. Celebrating creative women 55+.</p>
+    <p><a href="mailto:info@lovieproject.com">Contact</a> | <a href="#privacy">Privacy</a></p>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>
+    // Load profiles from profiles folder
+    // TODO: Implement profile loading logic
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('Home page loaded');
+    });
+  </script>
+</body>
+</html>
