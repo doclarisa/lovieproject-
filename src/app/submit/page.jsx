@@ -92,165 +92,180 @@ export default function SubmitPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold text-gray-900 mb-8">Submit Your Profile</h1>
-
-      <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-8 space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Name *
-          </label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-            disabled={isLoading}
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Tagline
-          </label>
-          <input
-            type="text"
-            name="tagline"
-            value={formData.tagline}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            disabled={isLoading}
-            placeholder="Short description of yourself"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Bio
-          </label>
-          <textarea
-            name="bio"
-            value={formData.bio}
-            onChange={handleChange}
-            rows="5"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            disabled={isLoading}
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              City
-            </label>
-            <input
-              type="text"
-              name="city"
-              value={formData.city}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              disabled={isLoading}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Country
-            </label>
-            <input
-              type="text"
-              name="country"
-              value={formData.country}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              disabled={isLoading}
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Email *
-          </label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-            disabled={isLoading}
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Website URL
-          </label>
-          <input
-            type="url"
-            name="website_url"
-            value={formData.website_url}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            disabled={isLoading}
-            placeholder="https://example.com"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Instagram Handle
-          </label>
-          <input
-            type="text"
-            name="instagram"
-            value={formData.instagram}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            disabled={isLoading}
-            placeholder="@yourhandle"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Language Preference
-          </label>
-          <select
-            name="language"
-            value={formData.language}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            disabled={isLoading}
+    <div style={{ backgroundColor: 'var(--color-cream)' }} className="min-h-screen pb-12">
+      <div className="max-w-2xl mx-auto px-4 py-12">
+        <div className="mb-12 text-center">
+          <h1
+            className="text-5xl font-serif font-black mb-3"
+            style={{ color: 'var(--color-burgundy-light)' }}
           >
-            <option value="en">English</option>
-            <option value="ru">Русский</option>
-          </select>
+            Submit Your Profile
+          </h1>
+          <p className="text-gray-600">Join our gallery of remarkable women</p>
         </div>
 
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-          disabled={isLoading}
-        >
-          {isLoading ? 'Submitting...' : 'Submit Profile'}
-        </button>
-      </form>
+        <div className="bg-white rounded-xl shadow-lg p-8 md:p-12">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wider">
+                Name *
+              </label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none transition"
+                style={{ '--tw-ring-color': 'var(--color-teal-light)' }}
+                required
+                disabled={isLoading}
+              />
+            </div>
 
-      {message && (
-        <div
-          className={`mt-4 p-4 rounded-lg ${
-            messageType === 'success'
-              ? 'bg-green-50 border border-green-200 text-green-800'
-              : 'bg-red-50 border border-red-200 text-red-800'
-          }`}
-        >
-          {message}
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wider">
+                Tagline
+              </label>
+              <input
+                type="text"
+                name="tagline"
+                value={formData.tagline}
+                onChange={handleChange}
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none transition"
+                disabled={isLoading}
+                placeholder="Short description of yourself"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wider">
+                Bio
+              </label>
+              <textarea
+                name="bio"
+                value={formData.bio}
+                onChange={handleChange}
+                rows="5"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none transition"
+                disabled={isLoading}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wider">
+                  City
+                </label>
+                <input
+                  type="text"
+                  name="city"
+                  value={formData.city}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none transition"
+                  disabled={isLoading}
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wider">
+                  Country
+                </label>
+                <input
+                  type="text"
+                  name="country"
+                  value={formData.country}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none transition"
+                  disabled={isLoading}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wider">
+                Email *
+              </label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none transition"
+                required
+                disabled={isLoading}
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wider">
+                Website URL
+              </label>
+              <input
+                type="url"
+                name="website_url"
+                value={formData.website_url}
+                onChange={handleChange}
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none transition"
+                disabled={isLoading}
+                placeholder="https://example.com"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wider">
+                Instagram Handle
+              </label>
+              <input
+                type="text"
+                name="instagram"
+                value={formData.instagram}
+                onChange={handleChange}
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none transition"
+                disabled={isLoading}
+                placeholder="@yourhandle"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wider">
+                Language Preference
+              </label>
+              <select
+                name="language"
+                value={formData.language}
+                onChange={handleChange}
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none transition"
+                disabled={isLoading}
+              >
+                <option value="en">English</option>
+                <option value="ru">Русский</option>
+              </select>
+            </div>
+
+            <button
+              type="submit"
+              className="w-full py-3 rounded-lg font-semibold text-white transition transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ backgroundColor: 'var(--color-burgundy-light)' }}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Submitting...' : 'Submit Profile'}
+            </button>
+          </form>
+
+          {message && (
+            <div
+              className={`mt-6 p-4 rounded-lg`}
+              style={{
+                backgroundColor: messageType === 'success' ? '#d5f4e6' : '#fadbd8',
+                borderLeft: `4px solid ${messageType === 'success' ? 'var(--color-teal-light)' : '#e74c3c'}`,
+                color: messageType === 'success' ? 'var(--color-teal-dark)' : '#c0392b',
+              }}
+            >
+              {message}
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

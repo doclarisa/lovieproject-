@@ -36,14 +36,16 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-500 to-purple-600">
-      <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-md">
-        <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">
-          Lovie Project
+    <div className="flex items-center justify-center min-h-screen" style={{ background: 'linear-gradient(135deg, var(--color-burgundy) 0%, var(--color-teal) 100%)' }}>
+      <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+        <h1 className="text-4xl font-serif font-bold text-center mb-2" style={{ color: 'var(--color-burgundy-light)' }}>
+          Lovie
         </h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <p className="text-center text-gray-600 mb-8 font-light">Project</p>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-xs font-semibold text-gray-700 mb-3 uppercase tracking-wider">
               Enter Password
             </label>
             <input
@@ -53,14 +55,20 @@ export default function LoginPage() {
                 setPassword(e.target.value);
                 setError('');
               }}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-2 transition"
+              style={{ '--tw-ring-color': 'var(--color-teal-light)' }}
               placeholder="Enter site password"
             />
           </div>
-          {error && <p className="text-red-600 text-sm">{error}</p>}
+          {error && (
+            <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg">
+              {error}
+            </div>
+          )}
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
+            className="w-full py-3 rounded-lg font-semibold text-white transition transform hover:scale-105"
+            style={{ backgroundColor: 'var(--color-burgundy-light)' }}
           >
             Enter
           </button>
