@@ -3,10 +3,13 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ProfileCard from '@/components/ProfileCard';
+import { supabase } from '@/lib/supabaseClient';
 
 export default function GalleryPage() {
   const [profiles, setProfiles] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
   const router = useRouter();
 
   useEffect(() => {
@@ -16,10 +19,40 @@ export default function GalleryPage() {
     }
   }, [router]);
 
+  useEffect(() => {
+    const fetchProfiles = async () => {
+      try {
+        setIsLoading(true);
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('status', 'approved')
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          throw error;
+        }
+
+        setProfiles(data || []);
+        setError('');
+      } catch (err) {
+        console.error('Error fetching profiles:', err);
+        setError('Failed to load profiles. Please try again later.');
+        setProfiles([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProfiles();
+  }, []);
+
   const filteredProfiles = profiles.filter(
     (profile) =>
       profile.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      profile.title?.toLowerCase().includes(searchTerm.toLowerCase())
+      profile.tagline?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      profile.city?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      profile.country?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -29,28 +62,44 @@ export default function GalleryPage() {
       <div className="mb-8">
         <input
           type="text"
-          placeholder="Search profiles..."
+          placeholder="Search by name, location, or tagline..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredProfiles.length > 0 ? (
-          filteredProfiles.map((profile) => (
-            <div
-              key={profile.id}
-              onClick={() => router.push(`/profile/${profile.id}`)}
-              className="cursor-pointer"
-            >
-              <ProfileCard profile={profile} />
+      {error && (
+        <div className="mb-4 p-4 bg-red-50 border border-red-200 text-red-800 rounded-lg">
+          {error}
+        </div>
+      )}
+
+      {isLoading ? (
+        <div className="flex items-center justify-center py-12">
+          <p className="text-gray-600">Loading profiles...</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredProfiles.length > 0 ? (
+            filteredProfiles.map((profile) => (
+              <div
+                key={profile.id}
+                onClick={() => router.push(`/profile/${profile.id}`)}
+                className="cursor-pointer"
+              >
+                <ProfileCard profile={profile} />
+              </div>
+            ))
+          ) : (
+            <div className="text-gray-600 col-span-full text-center py-8">
+              {profiles.length === 0
+                ? 'No profiles available yet. Check back soon!'
+                : 'No profiles match your search.'}
             </div>
-          ))
-        ) : (
-          <p className="text-gray-600 col-span-full">No profiles found</p>
-        )}
-      </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
