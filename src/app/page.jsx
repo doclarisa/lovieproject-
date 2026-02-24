@@ -21,15 +21,36 @@ export default function LoginPage() {
     }
   }, [router]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const correctPassword = process.env.NEXT_PUBLIC_SITE_PASSWORD;
+    setError('');
 
-    if (password === correctPassword) {
-      localStorage.setItem('siteAuthenticated', 'true');
-      router.push('/home');
-    } else {
-      setError('Invalid password');
+    try {
+      console.log('Submitting password to verify endpoint...');
+      const response = await fetch('/api/auth/verify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ password }),
+      });
+
+      console.log('API Response status:', response.status);
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Password verified successfully');
+        localStorage.setItem('siteAuthenticated', 'true');
+        router.push('/home');
+      } else {
+        const errorData = await response.json();
+        console.log('Password verification failed:', errorData);
+        setError('Invalid password');
+        setPassword('');
+      }
+    } catch (err) {
+      console.error('Password verification error:', err);
+      setError('Server error. Please try again.');
       setPassword('');
     }
   };
