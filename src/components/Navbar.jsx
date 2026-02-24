@@ -8,34 +8,37 @@ export default function Navbar() {
     <>
       <style>{`
         .navbar-link {
-          color: var(--color-gray-700);
+          color: #4a4238;
           font-weight: 500;
-          transition: color var(--transition-base);
+          transition: color 200ms cubic-bezier(0.4, 0, 0.2, 1);
           text-decoration: none;
           cursor: pointer;
+          display: inline-block;
         }
         .navbar-link:hover {
-          color: var(--color-burgundy-light);
+          color: #c91a52;
         }
         .navbar-link-admin {
-          color: var(--color-gray-700);
+          color: #4a4238;
           font-weight: 500;
-          font-size: var(--font-size-xs);
+          font-size: 0.75rem;
           text-transform: uppercase;
           letter-spacing: 0.05em;
-          transition: color var(--transition-base);
+          transition: color 200ms cubic-bezier(0.4, 0, 0.2, 1);
           text-decoration: none;
           cursor: pointer;
+          display: inline-block;
         }
         .navbar-link-admin:hover {
-          color: var(--color-burgundy-light);
+          color: #c91a52;
         }
       `}</style>
       <nav
         style={{
-          backgroundColor: 'var(--color-ivory)',
-          borderBottom: '2px solid var(--color-gold)',
-          width: '100%'
+          backgroundColor: '#faf7f2',
+          borderBottom: '2px solid #d4a574',
+          width: '100%',
+          boxSizing: 'border-box'
         }}
       >
         <div style={{
@@ -44,23 +47,24 @@ export default function Navbar() {
           padding: '1rem 2rem',
           display: 'flex',
           justifyContent: 'space-between',
-          alignItems: 'center'
+          alignItems: 'center',
+          boxSizing: 'border-box'
         }}>
           {/* Left side: Logo */}
           <Link href="/home" style={{ textDecoration: 'none' }}>
             <h1 style={{
-              fontFamily: 'var(--font-serif)',
-              fontSize: 'var(--font-size-2xl)',
+              fontFamily: "'Playfair Display', serif",
+              fontSize: '1.5rem',
               fontWeight: 700,
-              color: 'var(--color-burgundy)',
+              color: '#8b1538',
               margin: 0,
               letterSpacing: '-0.5px'
             }}>
               Lovie<span style={{
                 fontWeight: 400,
-                fontSize: 'var(--font-size-sm)',
+                fontSize: '0.875rem',
                 marginLeft: '8px',
-                color: 'var(--color-gray-600)'
+                color: '#6b6159'
               }}>Project</span>
             </h1>
           </Link>
