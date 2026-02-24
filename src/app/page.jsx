@@ -2,18 +2,22 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
     const auth = localStorage.getItem('siteAuthenticated');
     if (auth === 'true') {
-      setIsAuthenticated(true);
+      // User already authenticated, redirect immediately (don't render anything)
       router.push('/home');
+    } else {
+      // Not authenticated, show password page
+      setIsLoading(false);
     }
   }, [router]);
 
@@ -23,7 +27,6 @@ export default function LoginPage() {
 
     if (password === correctPassword) {
       localStorage.setItem('siteAuthenticated', 'true');
-      setIsAuthenticated(true);
       router.push('/home');
     } else {
       setError('Invalid password');
@@ -31,46 +34,75 @@ export default function LoginPage() {
     }
   };
 
-  if (isAuthenticated) {
+  // Don't render anything while checking authentication
+  if (isLoading) {
     return null;
   }
 
   return (
     <>
       <style>{`
-        .login-container {
-          position: fixed;
-          top: 0;
+        .login-wrapper {
+          display: flex;
+          min-height: 100vh;
+          background: #f5f1ed;
+        }
+
+        .login-image-column {
+          flex: 0 0 60%;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .login-image-overlay {
+          position: absolute;
+          bottom: 0;
           left: 0;
           right: 0;
-          bottom: 0;
+          height: 200px;
+          background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
+          z-index: 10;
+          display: flex;
+          align-items: flex-end;
+          padding: 2rem;
+        }
+
+        .login-image-quote {
+          color: white;
+          font-family: 'Playfair Display', serif;
+          font-size: 1.875rem;
+          font-style: italic;
+          font-weight: 700;
+          line-height: 1.4;
+          max-width: 400px;
+        }
+
+        .login-form-column {
+          flex: 0 0 40%;
+          background-color: #faf7f2;
           display: flex;
           align-items: center;
           justify-content: center;
-          background: linear-gradient(135deg, #8b1538 0%, #1b7a7b 100%);
+          padding: 2rem;
         }
 
         .login-card {
           width: 100%;
-          max-width: 420px;
-          padding: 2.5rem;
-          border-radius: 1rem;
-          box-shadow: 0 25px 50px -12px rgba(26, 22, 18, 0.25);
-          background-color: #faf7f2;
+          max-width: 350px;
         }
 
         .login-logo {
           text-align: center;
           font-family: 'Playfair Display', serif;
           font-weight: 700;
-          margin: 0 0 0.5rem0;
-          font-size: 2.25rem;
+          margin: 0 0 0.5rem 0;
+          font-size: 2rem;
           color: #8b1538;
         }
 
         .login-logo-project {
           font-weight: 400;
-          font-size: 0.875rem;
+          font-size: 0.75rem;
           margin-left: 4px;
           color: #6b6159;
         }
@@ -140,46 +172,85 @@ export default function LoginPage() {
         .login-button:hover {
           transform: scale(1.02);
         }
+
+        @media (max-width: 768px) {
+          .login-wrapper {
+            flex-direction: column;
+          }
+
+          .login-image-column {
+            flex: 0 0 250px;
+            height: 250px;
+          }
+
+          .login-form-column {
+            flex: 1;
+          }
+
+          .login-image-quote {
+            font-size: 1.25rem;
+          }
+        }
       `}</style>
 
-      <div className="login-container">
-        <div className="login-card">
-          <h1 className="login-logo">
-            Lovie<span className="login-logo-project">Project</span>
-          </h1>
-
-          <p className="login-tagline">
-            <span lang="en">Enter to explore</span>
-            <span lang="ru" style={{ display: 'none' }}>Войдите для исследования</span>
-          </p>
-
-          <form onSubmit={handleSubmit} className="login-form">
-            <div>
-              <label className="login-label">
-                <span lang="en">Enter Password</span>
-                <span lang="ru" style={{ display: 'none' }}>Введите пароль</span>
-              </label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  setError('');
-                }}
-                placeholder="●●●●●●●●"
-                className="login-input"
-              />
+      <div className="login-wrapper">
+        {/* Left: Hero Image */}
+        <div className="login-image-column">
+          <Image
+            src="/images/homepagewomen.jpg"
+            alt="Creative women of LovieProject"
+            fill
+            style={{ objectFit: 'cover' }}
+            priority={true}
+          />
+          <div className="login-image-overlay">
+            <div className="login-image-quote">
+              <span lang="en">We have something to say to the world</span>
+              <span lang="ru" style={{ display: 'none' }}>Нам есть что сказать миру</span>
             </div>
+          </div>
+        </div>
 
-            {error && (
-              <div className="login-error">{error}</div>
-            )}
+        {/* Right: Password Form */}
+        <div className="login-form-column">
+          <div className="login-card">
+            <h1 className="login-logo">
+              Lovie<span className="login-logo-project">Project</span>
+            </h1>
 
-            <button type="submit" className="login-button">
-              <span lang="en">Enter</span>
-              <span lang="ru" style={{ display: 'none' }}>Войти</span>
-            </button>
-          </form>
+            <p className="login-tagline">
+              <span lang="en">Enter to explore</span>
+              <span lang="ru" style={{ display: 'none' }}>Войдите для исследования</span>
+            </p>
+
+            <form onSubmit={handleSubmit} className="login-form">
+              <div>
+                <label className="login-label">
+                  <span lang="en">Enter Password</span>
+                  <span lang="ru" style={{ display: 'none' }}>Введите пароль</span>
+                </label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setError('');
+                  }}
+                  placeholder="●●●●●●●●"
+                  className="login-input"
+                />
+              </div>
+
+              {error && (
+                <div className="login-error">{error}</div>
+              )}
+
+              <button type="submit" className="login-button">
+                <span lang="en">Enter</span>
+                <span lang="ru" style={{ display: 'none' }}>Войти</span>
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </>
