@@ -36,17 +36,51 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen" style={{ background: 'linear-gradient(135deg, var(--color-burgundy) 0%, var(--color-teal) 100%)' }}>
-      <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
-        <h1 className="text-4xl font-serif font-bold text-center mb-2" style={{ color: 'var(--color-burgundy-light)' }}>
-          Lovie
+    <div
+      className="fixed inset-0 flex items-center justify-center"
+      style={{ background: 'linear-gradient(135deg, var(--color-burgundy) 0%, var(--color-teal) 100%)' }}
+    >
+      <div
+        className="w-full max-w-md p-10 rounded-2xl shadow-2xl"
+        style={{ backgroundColor: 'var(--color-ivory)' }}
+      >
+        {/* Logo */}
+        <h1
+          className="text-center font-serif font-bold mb-1"
+          style={{
+            fontSize: 'var(--font-size-4xl)',
+            color: 'var(--color-burgundy)'
+          }}
+        >
+          Lovie<span style={{ fontWeight: 400, fontSize: 'var(--font-size-sm)', marginLeft: '4px', color: 'var(--color-gray-600)' }}>Project</span>
         </h1>
-        <p className="text-center text-gray-600 mb-8 font-light">Project</p>
 
+        {/* Tagline */}
+        <p
+          className="text-center mb-8"
+          style={{
+            color: 'var(--color-gray-500)',
+            fontSize: 'var(--font-size-sm)',
+            fontWeight: 400
+          }}
+        >
+          <span lang="en">Enter to explore</span>
+          <span lang="ru" style={{ display: 'none' }}>Войдите для исследования</span>
+        </p>
+
+        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-3 uppercase tracking-wider">
-              Enter Password
+            <label
+              className="block mb-2 uppercase tracking-wider"
+              style={{
+                fontSize: 'var(--font-size-xs)',
+                fontWeight: 600,
+                color: 'var(--color-gray-700)'
+              }}
+            >
+              <span lang="en">Enter Password</span>
+              <span lang="ru" style={{ display: 'none' }}>Введите пароль</span>
             </label>
             <input
               type="password"
@@ -55,22 +89,45 @@ export default function LoginPage() {
                 setPassword(e.target.value);
                 setError('');
               }}
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-2 transition"
-              style={{ '--tw-ring-color': 'var(--color-teal-light)' }}
-              placeholder="Enter site password"
+              placeholder="●●●●●●●●"
+              className="w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition"
+              style={{
+                borderColor: 'var(--color-gray-200)',
+                color: 'var(--color-gray-900)',
+                fontSize: 'var(--font-size-base)'
+              }}
+              onFocus={(e) => e.target.style.borderColor = 'var(--color-teal-light)'}
+              onBlur={(e) => e.target.style.borderColor = 'var(--color-gray-200)'}
             />
           </div>
+
+          {/* Error Message */}
           {error && (
-            <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg">
+            <div
+              className="p-3 rounded-lg text-sm"
+              style={{
+                backgroundColor: '#fee2e2',
+                borderLeft: '4px solid var(--color-error)',
+                color: 'var(--color-error)'
+              }}
+            >
               {error}
             </div>
           )}
+
+          {/* Submit Button */}
           <button
             type="submit"
-            className="w-full py-3 rounded-lg font-semibold text-white transition transform hover:scale-105"
-            style={{ backgroundColor: 'var(--color-burgundy-light)' }}
+            className="w-full py-3 rounded-lg font-semibold text-white transition transform"
+            style={{
+              backgroundColor: 'var(--color-burgundy-light)',
+              fontSize: 'var(--font-size-base)'
+            }}
+            onMouseEnter={(e) => e.target.style.transform = 'scale(1.02)'}
+            onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
           >
-            Enter
+            <span lang="en">Enter</span>
+            <span lang="ru" style={{ display: 'none' }}>Войти</span>
           </button>
         </form>
       </div>
