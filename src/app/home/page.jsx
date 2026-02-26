@@ -13,13 +13,6 @@ export default function GalleryPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const auth = localStorage.getItem('siteAuthenticated');
-    if (auth !== 'true') {
-      router.push('/');
-    }
-  }, [router]);
-
-  useEffect(() => {
     const fetchProfiles = async () => {
       try {
         setIsLoading(true);
@@ -59,7 +52,7 @@ export default function GalleryPage() {
     <>
       <style>{`
         .gallery-wrapper {
-          background-color: #f5f1ed;
+          background-color: #FAF6F0;
           min-height: 100vh;
           padding-bottom: 3rem;
         }
@@ -80,7 +73,7 @@ export default function GalleryPage() {
           font-family: 'Playfair Display', serif;
           font-size: 2.5rem;
           font-weight: 900;
-          color: #8b1538;
+          color: #8B1A4A;
           margin: 0 0 0.75rem 0;
           line-height: 1.2;
         }

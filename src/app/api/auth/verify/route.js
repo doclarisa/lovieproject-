@@ -1,3 +1,5 @@
+import { NextResponse } from 'next/server';
+
 export async function POST(request) {
   try {
     const { password } = await request.json();
@@ -11,23 +13,31 @@ export async function POST(request) {
     console.log('=============================');
 
     if (!correctPassword) {
-      return Response.json(
+      return NextResponse.json(
         { error: 'Password not configured' },
         { status: 500 }
       );
     }
 
     if (password === correctPassword) {
-      return Response.json({ success: true });
+      const response = NextResponse.json({ success: true });
+      // Set an HttpOnly cookie — middleware reads this for server-side protection
+      response.cookies.set('siteAuthenticated', 'true', {
+        httpOnly: true,
+        sameSite: 'strict',
+        path: '/',
+        maxAge: 60 * 60 * 24 * 7, // 7 days
+      });
+      return response;
     } else {
-      return Response.json(
+      return NextResponse.json(
         { error: 'Invalid password' },
         { status: 401 }
       );
     }
   } catch (error) {
     console.error('Password verification error:', error);
-    return Response.json(
+    return NextResponse.json(
       { error: 'Server error' },
       { status: 500 }
     );

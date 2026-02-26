@@ -1,6 +1,6 @@
 export default function ProfileCard({ profile }) {
   const brandColors = [
-    '#8b1538', // burgundy
+    '#8B1A4A', // burgundy
     '#1b7a7b', // teal
     '#6b4c9a', // violet
     '#d4a574', // gold
@@ -17,7 +17,7 @@ export default function ProfileCard({ profile }) {
       style={{
         backgroundColor: 'white',
         borderRadius: '1rem',
-        boxShadow: '0 4px 6px -1px rgba(26, 22, 18, 0.1)',
+        boxShadow: '0 4px 6px -1px rgba(26, 22, 18, 0.1), 0 2px 4px -1px rgba(26, 22, 18, 0.06)',
         overflow: 'hidden',
         transition: 'all 300ms ease-out',
       }}
@@ -29,7 +29,7 @@ export default function ProfileCard({ profile }) {
           paddingBottom: '100%',
           height: 0,
           overflow: 'hidden',
-          backgroundColor: `linear-gradient(135deg, ${brandColors[0]} 0%, ${brandColors[2]} 100%)`,
+          background: `linear-gradient(135deg, ${brandColors[0]} 0%, ${brandColors[2]} 100%)`,
         }}
       >
         {profile.photo_url ? (
@@ -74,7 +74,7 @@ export default function ProfileCard({ profile }) {
             fontFamily: "'Playfair Display', serif",
             fontSize: '1.25rem',
             fontWeight: 700,
-            color: '#8b1538',
+            color: '#8B1A4A',
             margin: '0 0 0.5rem 0',
           }}
         >
@@ -138,22 +138,21 @@ export default function ProfileCard({ profile }) {
             marginTop: '1rem',
             padding: '0.625rem 1.25rem',
             borderRadius: '50px',
-            border: '2px solid #8b1538',
+            border: '2px solid #8B1A4A',
             backgroundColor: 'white',
-            color: '#8b1538',
+            color: '#8B1A4A',
             fontWeight: 600,
             fontSize: '0.875rem',
             cursor: 'pointer',
             transition: 'all 300ms ease-out',
-            textDecoration: 'none',
           }}
           onMouseEnter={(e) => {
-            e.target.style.backgroundColor = '#8b1538';
-            e.target.style.color = 'white';
+            e.currentTarget.style.backgroundColor = '#8B1A4A';
+            e.currentTarget.style.color = 'white';
           }}
           onMouseLeave={(e) => {
-            e.target.style.backgroundColor = 'white';
-            e.target.style.color = '#8b1538';
+            e.currentTarget.style.backgroundColor = 'white';
+            e.currentTarget.style.color = '#8B1A4A';
           }}
         >
           <span lang="en">Read more</span>
