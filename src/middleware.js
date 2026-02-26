@@ -3,24 +3,31 @@ import { NextResponse } from 'next/server';
 export function middleware(request) {
   const { pathname } = request.nextUrl;
 
-  // Always allow the password page and the auth API endpoint
-  if (pathname === '/' || pathname.startsWith('/api/auth/')) {
-    return NextResponse.next();
+  const session = request.cookies.get('lp_session');
+  const isAuthenticated = session?.value === 'granted';
+
+  // Redirect authenticated users away from the password page
+  if (pathname === '/' && isAuthenticated) {
+    return NextResponse.redirect(new URL('/home', request.url));
   }
 
-  // Check for the auth cookie set by /api/auth/verify
-  const authCookie = request.cookies.get('siteAuthenticated');
-  if (authCookie?.value === 'true') {
-    return NextResponse.next();
+  // Protected routes: /home, /profile/:id, /submit
+  const isProtected =
+    pathname === '/home' ||
+    pathname.startsWith('/home/') ||
+    pathname === '/submit' ||
+    pathname.startsWith('/profile/');
+
+  if (isProtected && !isAuthenticated) {
+    return NextResponse.redirect(new URL('/', request.url));
   }
 
-  // Not authenticated — send to password page
-  return NextResponse.redirect(new URL('/', request.url));
+  return NextResponse.next();
 }
 
 export const config = {
   matcher: [
-    // Match everything except Next.js internals and public assets
-    '/((?!_next/static|_next/image|favicon.ico|images/).*)',
+    // Run on all routes except Next.js internals and static assets
+    '/((?!_next/static|_next/image|favicon.ico|images/|api/).*)',
   ],
 };
