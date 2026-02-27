@@ -76,6 +76,9 @@ export default function Navbar() {
               <Link href="/home" style={{ textDecoration: 'none' }}>
                 <span className="navbar-link">Gallery</span>
               </Link>
+              <Link href="/projects" style={{ textDecoration: 'none' }}>
+                <span className="navbar-link">Our Projects</span>
+              </Link>
               <Link href="/submit" style={{ textDecoration: 'none' }}>
                 <span className="navbar-link">Submit</span>
               </Link>

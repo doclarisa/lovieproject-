@@ -12,12 +12,14 @@ export function middleware(request) {
     return NextResponse.redirect(new URL('/home', request.url));
   }
 
-  // Protected site routes: /home, /profile/:id, /submit
+  // Protected site routes: /home, /profile/:id, /submit, /projects
   const isSiteProtected =
-    pathname === '/home'       ||
-    pathname.startsWith('/home/') ||
-    pathname === '/submit'     ||
-    pathname.startsWith('/profile/');
+    pathname === '/home'             ||
+    pathname.startsWith('/home/')    ||
+    pathname === '/submit'           ||
+    pathname.startsWith('/profile/') ||
+    pathname === '/projects'         ||
+    pathname.startsWith('/projects/');
 
   if (isSiteProtected && !isAuthenticated) {
     return NextResponse.redirect(new URL('/', request.url));
