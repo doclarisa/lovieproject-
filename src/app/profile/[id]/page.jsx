@@ -1,217 +1,521 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import Image from 'next/image';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
+import PhotoGallery from '@/components/PhotoGallery';
 
-export default function ProfilePage() {
-  const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const router = useRouter();
-  const params = useParams();
-  const { id } = params;
+// Map a tag string to one of the four jewel-tone hero palettes
+const PALETTES = [
+  { bg: '#6b1035', mid: '#8B1A4A', accent: '#e8c4a0' }, // burgundy
+  { bg: '#0d4949', mid: '#1b7a7b', accent: '#FAF6F0'  }, // teal
+  { bg: '#4a3266', mid: '#6b4c9a', accent: '#e8c4a0' }, // violet
+  { bg: '#3d2010', mid: '#7a4a20', accent: '#FAF6F0'  }, // amber
+];
 
-  useEffect(() => {
-    const auth = localStorage.getItem('siteAuthenticated');
-    if (auth !== 'true') {
-      router.push('/');
-    }
-  }, [router]);
+function palette(tag) {
+  if (!tag) return PALETTES[0];
+  const n = [...tag].reduce((a, c) => a + c.charCodeAt(0), 0);
+  return PALETTES[n % PALETTES.length];
+}
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        setLoading(true);
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', id)
-          .eq('status', 'approved')
-          .single();
+// ── 404 state ───────────────────────────────────────────────────────────────
+function NotFound() {
+  return (
+    <div style={{
+      minHeight: '60vh',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      textAlign: 'center',
+      padding: '4rem 2rem',
+      backgroundColor: '#FAF6F0',
+    }}>
+      <p style={{
+        fontFamily: "'Playfair Display', serif",
+        fontSize: 'clamp(5rem, 15vw, 8rem)',
+        fontWeight: 900,
+        color: '#e5e0d8',
+        lineHeight: 1,
+        margin: '0 0 1rem',
+      }}>404</p>
+      <h1 style={{
+        fontFamily: "'Playfair Display', serif",
+        fontSize: '1.75rem',
+        fontWeight: 700,
+        color: '#4a4238',
+        margin: '0 0 0.625rem',
+      }}>Profile not found</h1>
+      <p style={{ color: '#8b8178', margin: '0 0 2.25rem', fontSize: '1rem' }}>
+        This profile may have been removed or is not yet approved.
+      </p>
+      <Link href="/home" style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '0.35rem',
+        color: '#1b7a7b',
+        fontWeight: 700,
+        fontSize: '0.95rem',
+        textDecoration: 'none',
+        borderBottom: '2px solid #1b7a7b',
+        paddingBottom: '2px',
+      }}>
+        ← Back to Gallery
+      </Link>
+    </div>
+  );
+}
 
-        if (error) {
-          throw error;
-        }
+// ── Page ────────────────────────────────────────────────────────────────────
+export default async function ProfilePage({ params }) {
+  const { id } = await params;
 
-        if (data) {
-          setProfile(data);
-          setError('');
-        } else {
-          setError('Profile not found');
-        }
-      } catch (err) {
-        console.error('Error fetching profile:', err);
-        setError('Failed to load profile');
-        setProfile(null);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', id)
+    .eq('status', 'approved')
+    .single();
 
-    if (id) {
-      fetchProfile();
-    }
-  }, [id]);
+  if (!profile) return <NotFound />;
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-600">Loading profile...</p>
-      </div>
-    );
-  }
-
-  if (error || !profile) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
-            {error || 'Profile not found'}
-          </h1>
-          <Link href="/home" className="text-blue-600 hover:underline">
-            ← Back to gallery
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  const pal       = palette(profile.tags?.[0]);
+  const tags      = profile.tags?.slice(0, 5) ?? [];
+  const location  = [profile.city, profile.country].filter(Boolean).join(', ');
+  const hasLinks  = profile.website_url || profile.instagram;
+  const hasGallery = Array.isArray(profile.gallery_urls) && profile.gallery_urls.length > 0;
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'var(--color-cream)' }}>
-      {/* Header Bar */}
-      <div className="bg-white border-b-2" style={{ borderBottomColor: 'var(--color-gold)' }}>
-        <div className="max-w-4xl mx-auto px-4 py-4">
-          <Link
-            href="/home"
-            className="inline-flex items-center gap-2 text-sm font-semibold transition hover:gap-3"
-            style={{ color: 'var(--color-teal-light)' }}
-          >
-            ← Back to gallery
-          </Link>
-        </div>
-      </div>
+    <>
+      <style href="profile-page" precedence="default">{`
+        /* ── Hero ─────────────────────────────── */
+        .pp-hero {
+          padding: clamp(3rem, 8vw, 5rem) 2rem clamp(3rem, 6vw, 4.5rem);
+          position: relative;
+          overflow: hidden;
+        }
+        .pp-hero::after {
+          content: '';
+          position: absolute;
+          bottom: -1px;
+          left: 0; right: 0;
+          height: 80px;
+          background: linear-gradient(to bottom, transparent, #FAF6F0);
+          pointer-events: none;
+        }
 
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-          {/* Hero Image */}
-          {profile.photo_url && (
-            <div className="h-96 overflow-hidden bg-gray-100">
-              <img
+        /* Decorative bg circle */
+        .pp-hero-orb {
+          position: absolute;
+          border-radius: 50%;
+          background: rgba(255,255,255,0.06);
+          pointer-events: none;
+        }
+
+        .pp-hero-inner {
+          position: relative;
+          max-width: 62rem;
+          margin: 0 auto;
+          display: grid;
+          grid-template-columns: 280px 1fr;
+          gap: 3.5rem;
+          align-items: center;
+          z-index: 1;
+        }
+
+        /* Photo */
+        .pp-photo-wrap {
+          width: 280px;
+          height: 280px;
+          border-radius: 1.5rem;
+          overflow: hidden;
+          position: relative;
+          flex-shrink: 0;
+          box-shadow:
+            0 0 0 5px rgba(255,255,255,0.2),
+            0 24px 50px rgba(0,0,0,0.35);
+        }
+        .pp-photo-placeholder {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-family: 'Playfair Display', serif;
+          font-size: 5rem;
+          font-weight: 700;
+          color: rgba(255,255,255,0.8);
+          background: rgba(0,0,0,0.2);
+        }
+
+        /* Hero text */
+        .pp-hero-info { min-width: 0; }
+
+        .pp-hero-eyebrow {
+          display: inline-block;
+          font-size: 0.72rem;
+          font-weight: 700;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: rgba(255,255,255,0.6);
+          margin-bottom: 0.75rem;
+        }
+
+        .pp-name {
+          font-family: 'Playfair Display', serif;
+          font-size: clamp(2.5rem, 5.5vw, 4.25rem);
+          font-weight: 900;
+          color: #FAF6F0;
+          line-height: 1.05;
+          margin: 0 0 0.75rem;
+          letter-spacing: -0.025em;
+          word-break: break-word;
+        }
+
+        .pp-hero-tagline {
+          font-family: 'Playfair Display', serif;
+          font-style: italic;
+          font-size: clamp(1rem, 2vw, 1.25rem);
+          color: rgba(250,246,240,0.78);
+          margin: 0 0 1.25rem;
+          line-height: 1.45;
+        }
+
+        .pp-hero-meta {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          gap: 0.75rem;
+          margin-bottom: 1.25rem;
+          font-size: 0.9rem;
+          color: rgba(250,246,240,0.72);
+          font-weight: 500;
+        }
+        .pp-hero-meta-divider {
+          width: 4px; height: 4px;
+          border-radius: 50%;
+          background: rgba(255,255,255,0.35);
+          display: inline-block;
+        }
+
+        .pp-hero-tags {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+        }
+        .pp-hero-tag {
+          display: inline-block;
+          padding: 0.3rem 0.875rem;
+          border-radius: 50px;
+          font-size: 0.78rem;
+          font-weight: 600;
+          letter-spacing: 0.04em;
+          background: rgba(255,255,255,0.15);
+          border: 1px solid rgba(255,255,255,0.25);
+          color: rgba(255,255,255,0.92);
+          backdrop-filter: blur(4px);
+        }
+
+        /* ── Content area ──────────────────────── */
+        .pp-content {
+          max-width: 44rem;
+          margin: 0 auto;
+          padding: 3rem 2rem 7rem;
+        }
+
+        .pp-section {
+          margin-bottom: 3.5rem;
+          padding-bottom: 3.5rem;
+          border-bottom: 1px solid #e5e0d8;
+        }
+        .pp-section:last-of-type { border-bottom: none; }
+
+        .pp-section-label {
+          font-size: 0.7rem;
+          font-weight: 800;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: #b8aea0;
+          margin: 0 0 1.5rem;
+          display: block;
+        }
+
+        /* Bio */
+        .pp-bio {
+          font-family: 'Playfair Display', serif;
+          font-size: clamp(1.05rem, 1.5vw, 1.2rem);
+          line-height: 1.9;
+          color: #4a4238;
+          white-space: pre-wrap;
+          margin: 0;
+        }
+
+        /* Links */
+        .pp-links {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.875rem;
+        }
+        .pp-link-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.6rem;
+          padding: 0.75rem 1.5rem;
+          border-radius: 50px;
+          font-size: 0.875rem;
+          font-weight: 700;
+          text-decoration: none;
+          transition: transform 200ms ease, box-shadow 200ms ease;
+          border: none;
+        }
+        .pp-link-btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+          border-bottom: none;
+        }
+        .pp-link-website   { background: #1b7a7b; color: white; }
+        .pp-link-instagram { background: #6b4c9a; color: white; }
+        .pp-link-other     { background: #8B1A4A; color: white; }
+
+        /* Contact */
+        .pp-contact-wrap { text-align: center; }
+        .pp-contact-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.75rem;
+          padding: 1.1rem 2.75rem;
+          background: #8B1A4A;
+          color: #FAF6F0;
+          border-radius: 50px;
+          font-family: 'Playfair Display', serif;
+          font-size: 1.125rem;
+          font-weight: 700;
+          text-decoration: none;
+          transition: background 220ms ease, transform 220ms ease, box-shadow 220ms ease;
+          box-shadow: 0 8px 28px rgba(139, 26, 74, 0.32);
+        }
+        .pp-contact-btn:hover {
+          background: #c91a52;
+          transform: translateY(-2px);
+          box-shadow: 0 14px 36px rgba(139, 26, 74, 0.42);
+          border-bottom: none;
+          color: white;
+        }
+
+        /* Back link (desktop) */
+        .pp-back {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.4rem;
+          font-size: 0.875rem;
+          font-weight: 700;
+          color: #1b7a7b;
+          text-decoration: none;
+          border-bottom: 1px solid transparent;
+          transition: border-color 180ms ease, color 180ms ease;
+          margin-top: 2.5rem;
+        }
+        .pp-back:hover { border-bottom-color: #1b7a7b; color: #0d4949; }
+
+        /* ── Mobile sticky back bar ────────────── */
+        .pp-sticky-back {
+          display: none;
+        }
+
+        /* ── Responsive ──────────────────────── */
+        @media (max-width: 768px) {
+          .pp-hero-inner {
+            grid-template-columns: 1fr;
+            text-align: center;
+            gap: 2rem;
+            justify-items: center;
+          }
+          .pp-photo-wrap { width: 220px; height: 220px; }
+          .pp-hero-meta { justify-content: center; }
+          .pp-hero-tags { justify-content: center; }
+          .pp-content   { padding: 2.5rem 1.25rem 6rem; }
+          .pp-links     { justify-content: center; }
+          .pp-sticky-back {
+            display: block;
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            padding: 0.875rem 1.5rem;
+            background: rgba(250,246,240,0.96);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid #e5e0d8;
+            z-index: 100;
+            text-align: center;
+          }
+          .pp-sticky-back a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #1b7a7b;
+            text-decoration: none;
+          }
+        }
+      `}</style>
+
+      {/* ── Hero ── */}
+      <section
+        className="pp-hero"
+        style={{ background: `linear-gradient(145deg, ${pal.bg} 0%, ${pal.mid} 100%)` }}
+      >
+        {/* Decorative orbs */}
+        <div className="pp-hero-orb" style={{ width: '22rem', height: '22rem', top: '-6rem', right: '-6rem' }} />
+        <div className="pp-hero-orb" style={{ width: '10rem', height: '10rem', bottom: '2rem', left: '3%' }} />
+
+        <div className="pp-hero-inner">
+          {/* Photo */}
+          <div className="pp-photo-wrap">
+            {profile.photo_url ? (
+              <Image
                 src={profile.photo_url}
                 alt={profile.name}
-                className="w-full h-full object-cover hover:scale-105 transition duration-300"
+                fill
+                sizes="(max-width: 768px) 220px, 280px"
+                style={{ objectFit: 'cover' }}
+                priority
               />
-            </div>
-          )}
-
-          {/* Profile Content */}
-          <div className="p-8 md:p-12">
-            {/* Name & Tagline */}
-            <div className="mb-6 pb-6 border-b-2" style={{ borderBottomColor: 'var(--color-gold-light)' }}>
-              <h1
-                className="text-5xl font-serif font-black mb-2"
-                style={{ color: 'var(--color-burgundy-light)' }}
+            ) : (
+              <div
+                className="pp-photo-placeholder"
+                style={{ background: `linear-gradient(135deg, ${pal.mid}99, ${pal.bg})` }}
               >
-                {profile.name}
-              </h1>
+                {profile.name?.trim()?.[0]?.toUpperCase() ?? '?'}
+              </div>
+            )}
+          </div>
 
-              {profile.tagline && (
-                <p
-                  className="text-xl font-light italic"
-                  style={{ color: 'var(--color-teal)' }}
-                >
-                  {profile.tagline}
-                </p>
-              )}
+          {/* Info */}
+          <div className="pp-hero-info">
+            {/* Eyebrow */}
+            <span className="pp-hero-eyebrow">LovieProject</span>
 
-              {(profile.city || profile.country) && (
-                <p className="text-sm mt-3" style={{ color: 'var(--color-gray-500)' }}>
-                  📍 {[profile.city, profile.country].filter(Boolean).join(', ')}
-                </p>
-              )}
-            </div>
+            {/* Name */}
+            <h1 className="pp-name">{profile.name}</h1>
 
-            {/* Bio */}
-            {profile.bio && (
-              <div className="mb-8 pb-8 border-b-2" style={{ borderBottomColor: 'var(--color-gold-light)' }}>
-                <p className="text-lg leading-relaxed whitespace-pre-wrap" style={{ color: 'var(--color-gray-700)' }}>
-                  {profile.bio}
-                </p>
+            {/* Tagline */}
+            {profile.tagline && (
+              <p className="pp-hero-tagline">"{profile.tagline}"</p>
+            )}
+
+            {/* Location + age */}
+            {(location || profile.age) && (
+              <div className="pp-hero-meta">
+                {location && <span>📍 {location}</span>}
+                {location && profile.age && <span className="pp-hero-meta-divider" />}
+                {profile.age && <span>{profile.age} years</span>}
               </div>
             )}
 
-            {/* Connect Section */}
-            <div className="mb-8 pb-8 border-b-2" style={{ borderBottomColor: 'var(--color-gold-light)' }}>
-              <h2 className="text-2xl font-serif font-bold mb-6" style={{ color: 'var(--color-burgundy-light)' }}>
-                Connect
-              </h2>
-              <div className="space-y-3">
-                {profile.email && (
-                  <a
-                    href={`mailto:${profile.email}`}
-                    className="inline-flex items-center gap-3 px-4 py-2 rounded-lg transition hover:shadow-md"
-                    style={{
-                      color: 'var(--color-white)',
-                      backgroundColor: 'var(--color-teal-light)',
-                    }}
-                  >
-                    📧 <span>{profile.email}</span>
-                  </a>
-                )}
-                {profile.website_url && (
-                  <a
-                    href={profile.website_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-3 px-4 py-2 rounded-lg transition hover:shadow-md ml-0 md:ml-3 mt-2 md:mt-0"
-                    style={{
-                      color: 'var(--color-white)',
-                      backgroundColor: 'var(--color-gold)',
-                    }}
-                  >
-                    🌐 <span>Website</span>
-                  </a>
-                )}
-                {profile.instagram && (
-                  <a
-                    href={`https://instagram.com/${profile.instagram.replace('@', '')}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-3 px-4 py-2 rounded-lg transition hover:shadow-md ml-0 md:ml-3 mt-2 md:mt-0"
-                    style={{
-                      color: 'var(--color-white)',
-                      backgroundColor: 'var(--color-violet-light)',
-                    }}
-                  >
-                    📸 <span>{profile.instagram}</span>
-                  </a>
-                )}
-              </div>
-            </div>
-
-            {/* Gallery */}
-            {profile.gallery_urls && profile.gallery_urls.length > 0 && (
-              <div>
-                <h2 className="text-2xl font-serif font-bold mb-6" style={{ color: 'var(--color-burgundy-light)' }}>
-                  Gallery
-                </h2>
-                <div className="grid grid-cols-2 gap-4">
-                  {profile.gallery_urls.map((url, idx) => (
-                    <img
-                      key={idx}
-                      src={url}
-                      alt={`Gallery ${idx + 1}`}
-                      className="w-full h-48 object-cover rounded-lg shadow-md hover:shadow-lg transition"
-                    />
-                  ))}
-                </div>
+            {/* Tags */}
+            {tags.length > 0 && (
+              <div className="pp-hero-tags">
+                {tags.map((tag) => (
+                  <span key={tag} className="pp-hero-tag">{tag}</span>
+                ))}
               </div>
             )}
           </div>
         </div>
+      </section>
+
+      {/* ── Editorial content ── */}
+      <div className="pp-content">
+
+        {/* Bio */}
+        {profile.bio && (
+          <section className="pp-section">
+            <span className="pp-section-label">
+              <span lang="en">Her Story</span>
+              <span lang="ru">Её история</span>
+            </span>
+            <p className="pp-bio">{profile.bio}</p>
+          </section>
+        )}
+
+        {/* Links */}
+        {hasLinks && (
+          <section className="pp-section">
+            <span className="pp-section-label">
+              <span lang="en">Find Her Online</span>
+              <span lang="ru">В интернете</span>
+            </span>
+            <div className="pp-links">
+              {profile.website_url && (
+                <a
+                  href={profile.website_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="pp-link-btn pp-link-website"
+                >
+                  🌐 <span lang="en">Website</span><span lang="ru">Сайт</span>
+                </a>
+              )}
+              {profile.instagram && (
+                <a
+                  href={`https://instagram.com/${profile.instagram.replace('@', '')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="pp-link-btn pp-link-instagram"
+                >
+                  🌿 Instagram
+                </a>
+              )}
+              {profile.other_social && (
+                <a
+                  href={profile.other_social}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="pp-link-btn pp-link-other"
+                >
+                  ✨ <span lang="en">More</span><span lang="ru">Ещё</span>
+                </a>
+              )}
+            </div>
+          </section>
+        )}
+
+        {/* Photo gallery */}
+        {hasGallery && (
+          <section className="pp-section">
+            <span className="pp-section-label">
+              <span lang="en">Gallery</span>
+              <span lang="ru">Галерея</span>
+            </span>
+            <PhotoGallery images={profile.gallery_urls} name={profile.name} />
+          </section>
+        )}
+
+        {/* Contact */}
+        {profile.email && (
+          <section className="pp-section pp-contact-wrap">
+            <a href={`mailto:${profile.email}`} className="pp-contact-btn">
+              ✉️&nbsp;
+              <span lang="en">Write to me</span>
+              <span lang="ru">Написать мне</span>
+            </a>
+          </section>
+        )}
+
+        {/* Back link (desktop) */}
+        <Link href="/home" className="pp-back">
+          ←&nbsp;
+          <span lang="en">Back to Gallery</span>
+          <span lang="ru">Назад в галерею</span>
+        </Link>
       </div>
-    </div>
+
+      {/* ── Mobile sticky back bar ── */}
+      <div className="pp-sticky-back">
+        <Link href="/home">
+          ←&nbsp;
+          <span lang="en">Back to Gallery</span>
+          <span lang="ru">Назад</span>
+        </Link>
+      </div>
+    </>
   );
 }
