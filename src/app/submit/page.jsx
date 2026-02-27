@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 
 export default function SubmitPage() {
@@ -19,14 +18,6 @@ export default function SubmitPage() {
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState(''); // 'success' or 'error'
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
-
-  useEffect(() => {
-    const auth = localStorage.getItem('siteAuthenticated');
-    if (auth !== 'true') {
-      router.push('/');
-    }
-  }, [router]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -42,7 +33,7 @@ export default function SubmitPage() {
     setMessage('');
 
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('profiles')
         .insert([
           {
