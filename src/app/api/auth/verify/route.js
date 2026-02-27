@@ -3,13 +3,15 @@ import { NextResponse } from 'next/server';
 export async function POST(request) {
   try {
     const { password } = await request.json();
-    const correctPassword = process.env.NEXT_PUBLIC_SITE_PASSWORD;
+    // SITE_PASSWORD is server-only (no NEXT_PUBLIC_ prefix) so it is never
+    // embedded in the browser bundle.
+    const correctPassword = process.env.SITE_PASSWORD?.trim();
 
     if (!correctPassword) {
       return NextResponse.json({ success: false }, { status: 500 });
     }
 
-    if (password === correctPassword) {
+    if (password?.trim() === correctPassword) {
       const response = NextResponse.json({ success: true });
       response.cookies.set('lp_session', 'granted', {
         httpOnly: true,
