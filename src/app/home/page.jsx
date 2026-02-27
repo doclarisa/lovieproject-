@@ -1,6 +1,16 @@
 import { supabase } from '@/lib/supabaseClient';
 import GalleryClient from '@/components/GalleryClient';
 
+export const metadata = {
+  title: 'Gallery — Women Who Inspire',
+  description: 'Artists, travelers, spiritual teachers and healers 55+ from around the world · Художники, путешественницы, духовные учителя и целители 55+ со всего мира',
+  openGraph: {
+    title: 'Gallery — LovieProject',
+    description: 'Artists, travelers, spiritual teachers and healers 55+ from around the world',
+    images: [{ url: '/images/homepagewomen.jpg', width: 1200, height: 800, alt: 'LovieProject Gallery' }],
+  },
+};
+
 export default async function GalleryPage() {
   const { data: profiles, error } = await supabase
     .from('profiles')

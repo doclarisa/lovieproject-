@@ -3,8 +3,13 @@ import Link from 'next/link';
 import ProjectsGallery from '@/components/ProjectsGallery';
 
 export const metadata = {
-  title: 'Наши Проекты · Our Projects — LovieProject',
-  description: 'Travel groups, exhibitions, workshops and gatherings by LovieProject members',
+  title: 'Our Projects · Наши Проекты',
+  description: 'Travel groups, exhibitions, workshops and gatherings by LovieProject members · Путешествия, выставки, мастер-классы и встречи от участниц LovieProject',
+  openGraph: {
+    title: 'Our Projects — LovieProject',
+    description: 'Travel groups, exhibitions, workshops and gatherings by LovieProject members',
+    images: [{ url: '/images/homepagewomen.jpg', width: 1200, height: 800, alt: 'LovieProject Projects' }],
+  },
 };
 
 export default async function ProjectsPage() {

@@ -17,6 +17,29 @@ function palette(tag) {
   return PALETTES[n % PALETTES.length];
 }
 
+// ── Dynamic OG metadata ─────────────────────────────────────────────────────
+export async function generateMetadata({ params }) {
+  const { id } = await params;
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('name, tagline, photo_url')
+    .eq('id', id)
+    .eq('status', 'approved')
+    .single();
+  if (!profile) return { title: 'Profile not found' };
+  return {
+    title: profile.name,
+    description: profile.tagline || `Meet ${profile.name} on LovieProject`,
+    openGraph: {
+      title: `${profile.name} — LovieProject`,
+      description: profile.tagline || `Meet ${profile.name} on LovieProject`,
+      images: profile.photo_url
+        ? [{ url: profile.photo_url, alt: profile.name }]
+        : [{ url: '/images/homepagewomen.jpg', alt: 'LovieProject' }],
+    },
+  };
+}
+
 // ── 404 state ───────────────────────────────────────────────────────────────
 function NotFound() {
   return (

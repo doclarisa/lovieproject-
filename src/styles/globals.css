@@ -587,45 +587,51 @@ body.lang-ru [lang="en"] {
    ============================================================================ */
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 @keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
 }
 
-.animate-fadeIn {
-  animation: fadeIn var(--transition-base);
+/* Page entrance — applied automatically to every page's root child */
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-.animate-slideUp {
-  animation: slideUp var(--transition-slow);
+main > * {
+  animation: page-enter 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-.animate-pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+/* Skeleton shimmer */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
 }
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #ede8e1 25%,
+    #e2dbd2 50%,
+    #ede8e1 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+  border-radius: 0.5rem;
+}
+
+.animate-fadeIn  { animation: fadeIn var(--transition-base); }
+.animate-slideUp { animation: slideUp var(--transition-slow); }
+.animate-pulse   { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
 
 /* ============================================================================
    PRINT STYLES
