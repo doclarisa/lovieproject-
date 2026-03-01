@@ -54,6 +54,7 @@ export default function AdminPanel({ initialProfiles, fetchError }) {
   const [rejectingId, setRejectingId] = useState(null);
   const [rejectNotes, setRejectNotes] = useState({});
   const [loadingId,   setLoadingId]   = useState(null);
+  const [actionError, setActionError] = useState('');
   const router = useRouter();
 
   const pending  = profiles.filter(p => p.status === 'pending');
@@ -64,18 +65,21 @@ export default function AdminPanel({ initialProfiles, fetchError }) {
 
   const updateStatus = async (id, status, rejection_note) => {
     setLoadingId(id);
+    setActionError('');
     try {
       const res = await fetch('/api/admin/update-status', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id, status, ...(rejection_note ? { rejection_note } : {}) }),
       });
-      if (!res.ok) throw new Error((await res.json()).error || 'Failed');
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || `Server error ${res.status}`);
       setProfiles(prev => prev.map(p => p.id === id ? { ...p, status } : p));
       setRejectingId(null);
       setRejectNotes(prev => { const n = { ...prev }; delete n[id]; return n; });
+      router.refresh(); // Re-fetch server data to confirm DB was updated
     } catch (err) {
-      alert('Error: ' + err.message);
+      setActionError(err.message);
     } finally {
       setLoadingId(null);
     }
@@ -312,6 +316,14 @@ export default function AdminPanel({ initialProfiles, fetchError }) {
           {fetchError && (
             <div className="ap-error">
               Could not load profiles — check your Supabase service role key.
+            </div>
+          )}
+          {actionError && (
+            <div className="ap-error" style={{ marginBottom: '1.5rem' }}>
+              <strong>Action failed:</strong> {actionError}
+              {actionError.includes('Unauthorized') && (
+                <span> — your admin session may have expired. <button onClick={handleLogout} style={{ background: 'none', border: 'none', color: '#dc2626', textDecoration: 'underline', cursor: 'pointer', padding: 0, fontSize: 'inherit' }}>Log in again</button></span>
+              )}
             </div>
           )}
 
