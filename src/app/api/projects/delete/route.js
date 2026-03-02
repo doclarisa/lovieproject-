@@ -8,19 +8,23 @@ export async function POST(request) {
   }
 
   try {
-    const { id, email } = await request.json();
-    if (!id || !email) {
-      return NextResponse.json({ error: 'Missing id or email' }, { status: 400 });
+    const { id, value } = await request.json();
+    if (!id || !value) {
+      return NextResponse.json({ error: 'Missing id or verification value' }, { status: 400 });
     }
 
-    // Check admin cookie — admins can delete any project
+    // Admins can delete any project
     const adminCookie = request.cookies.get('lp_admin');
-    const isAdmin = adminCookie?.value === 'granted';
+    if (adminCookie?.value === 'granted') {
+      const { error } = await supabaseAdmin.from('projects').delete().eq('id', id);
+      if (error) throw error;
+      return NextResponse.json({ success: true });
+    }
 
     // Fetch the project to verify ownership
     const { data: project, error: fetchError } = await supabaseAdmin
       .from('projects')
-      .select('id, contact_email')
+      .select('id, contact_email, contact_name')
       .eq('id', id)
       .single();
 
@@ -28,19 +32,23 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Project not found' }, { status: 404 });
     }
 
-    // Non-admins must provide the correct contact email
-    if (!isAdmin) {
-      const matches = project.contact_email?.toLowerCase().trim() === email.toLowerCase().trim();
-      if (!matches) {
-        return NextResponse.json({ error: 'Email does not match project owner' }, { status: 403 });
-      }
+    const v = value.toLowerCase().trim();
+
+    // Match against email if project has one, otherwise match against name
+    const hasEmail = !!project.contact_email?.trim();
+    const matches = hasEmail
+      ? project.contact_email.toLowerCase().trim() === v
+      : project.contact_name?.toLowerCase().trim() === v;
+
+    if (!matches) {
+      const hint = hasEmail ? 'email' : 'name';
+      return NextResponse.json(
+        { error: `The ${hint} you entered does not match this project` },
+        { status: 403 },
+      );
     }
 
-    const { error } = await supabaseAdmin
-      .from('projects')
-      .delete()
-      .eq('id', id);
-
+    const { error } = await supabaseAdmin.from('projects').delete().eq('id', id);
     if (error) throw error;
 
     return NextResponse.json({ success: true });

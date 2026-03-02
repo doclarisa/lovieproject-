@@ -3,22 +3,29 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function DeleteOwnProject({ projectId }) {
-  const [open,        setOpen]        = useState(false);
-  const [email,       setEmail]       = useState('');
-  const [loading,     setLoading]     = useState(false);
-  const [error,       setError]       = useState('');
+export default function DeleteOwnProject({ projectId, hasEmail }) {
+  const [open,    setOpen]    = useState(false);
+  const [value,   setValue]   = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error,   setError]   = useState('');
   const router = useRouter();
 
+  const label = hasEmail ? 'email' : 'name';
+  const labelRu = hasEmail ? 'email' : 'имя';
+  const placeholder = hasEmail ? 'your@email.com' : 'Your Name';
+
   const handleDelete = async () => {
-    if (!email.trim()) { setError('Please enter your email · Введите email'); return; }
+    if (!value.trim()) {
+      setError(`Please enter your ${label} · Введите ваш ${labelRu}`);
+      return;
+    }
     setLoading(true);
     setError('');
     try {
       const res = await fetch('/api/projects/delete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: projectId, email: email.trim() }),
+        body: JSON.stringify({ id: projectId, value: value.trim() }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed');
@@ -44,18 +51,18 @@ export default function DeleteOwnProject({ projectId }) {
         </button>
       ) : (
         <div style={{ maxWidth: '26rem' }}>
-          <p style={{ fontSize: '0.85rem', color: '#6b6159', margin: '0 0 0.75rem', fontWeight: 600 }}>
-            Enter the email you used when submitting to confirm deletion:
-          </p>
-          <p style={{ fontSize: '0.78rem', color: '#9b9188', margin: '0 0 0.75rem' }}>
-            Введите email, который вы использовали при отправке:
+          <p style={{ fontSize: '0.85rem', color: '#6b6159', margin: '0 0 0.5rem', fontWeight: 600 }}>
+            Enter the {label} you used when submitting to confirm:
+            <span style={{ display: 'block', fontWeight: 400, color: '#9b9188', fontSize: '0.78rem', marginTop: '0.2rem' }}>
+              Введите {labelRu}, который вы использовали при отправке:
+            </span>
           </p>
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
             <input
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              placeholder="your@email.com"
+              type={hasEmail ? 'email' : 'text'}
+              value={value}
+              onChange={e => setValue(e.target.value)}
+              placeholder={placeholder}
               autoFocus
               style={{
                 flex: 1, minWidth: '180px',
@@ -77,7 +84,7 @@ export default function DeleteOwnProject({ projectId }) {
               {loading ? '...' : 'Delete · Удалить'}
             </button>
             <button
-              onClick={() => { setOpen(false); setEmail(''); setError(''); }}
+              onClick={() => { setOpen(false); setValue(''); setError(''); }}
               style={{
                 padding: '0.45rem 0.75rem', background: 'none',
                 border: '1px solid #e5e0d8', borderRadius: '0.375rem',

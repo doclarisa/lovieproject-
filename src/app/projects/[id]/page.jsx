@@ -374,7 +374,7 @@ export default async function ProjectDetailPage({ params }) {
             )}
           </section>
 
-          <DeleteOwnProject projectId={project.id} />
+          <DeleteOwnProject projectId={project.id} hasEmail={!!project.contact_email} />
 
           {/* Back link (desktop) */}
           <Link href="/projects" className="pd-back-link">
