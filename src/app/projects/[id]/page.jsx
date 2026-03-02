@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { supabase } from '@/lib/supabaseClient';
+import { supabaseAdmin } from '@/lib/supabaseAdmin';
 
 const CATEGORIES = {
   travel:   { ru: 'Путешествия',  en: 'Travel',     gradient: 'linear-gradient(135deg, #0d4949 0%, #1b7a7b 100%)' },
@@ -63,7 +63,7 @@ function NotFound() {
 export default async function ProjectDetailPage({ params }) {
   const { id } = await params;
 
-  const { data: project } = await supabase
+  const { data: project } = await supabaseAdmin
     .from('projects')
     .select('*')
     .eq('id', id)

@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabaseClient';
+import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import Link from 'next/link';
 import ProjectsGallery from '@/components/ProjectsGallery';
 
@@ -13,7 +13,7 @@ export const metadata = {
 };
 
 export default async function ProjectsPage() {
-  const { data: projects, error } = await supabase
+  const { data: projects, error } = await supabaseAdmin
     .from('projects')
     .select('*')
     .eq('status', 'approved')
