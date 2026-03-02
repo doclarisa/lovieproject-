@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-const TABS = ['pending', 'approved', 'rejected'];
+const TABS = ['pending', 'approved'];
 
 function fmt(iso) {
   if (!iso) return '—';
@@ -59,9 +59,8 @@ export default function AdminPanel({ initialProfiles, fetchError }) {
 
   const pending  = profiles.filter(p => p.status === 'pending');
   const approved = profiles.filter(p => p.status === 'approved');
-  const rejected = profiles.filter(p => p.status === 'rejected');
-  const counts   = { pending: pending.length, approved: approved.length, rejected: rejected.length };
-  const visible  = { pending, approved, rejected }[tab];
+  const counts   = { pending: pending.length, approved: approved.length };
+  const visible  = tab === 'pending' ? pending : approved;
 
   const updateStatus = async (id, status, rejection_note) => {
     setLoadingId(id);
@@ -78,6 +77,27 @@ export default function AdminPanel({ initialProfiles, fetchError }) {
       setRejectingId(null);
       setRejectNotes(prev => { const n = { ...prev }; delete n[id]; return n; });
       router.refresh(); // Re-fetch server data to confirm DB was updated
+    } catch (err) {
+      setActionError(err.message);
+    } finally {
+      setLoadingId(null);
+    }
+  };
+
+  const deleteProfile = async (id) => {
+    setLoadingId(id);
+    setActionError('');
+    try {
+      const res = await fetch('/api/admin/delete-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || `Server error ${res.status}`);
+      setProfiles(prev => prev.filter(p => p.id !== id));
+      setRejectingId(null);
+      setRejectNotes(prev => { const n = { ...prev }; delete n[id]; return n; });
     } catch (err) {
       setActionError(err.message);
     } finally {
@@ -330,7 +350,7 @@ export default function AdminPanel({ initialProfiles, fetchError }) {
           {visible.length === 0 ? (
             <div className="ap-empty">
               <div className="ap-empty-icon">
-                {tab === 'pending' ? '📭' : tab === 'approved' ? '✅' : '❌'}
+                {tab === 'pending' ? '📭' : '✅'}
               </div>
               <p className="ap-empty-text">
                 No {tab} profiles yet.
@@ -354,10 +374,10 @@ export default function AdminPanel({ initialProfiles, fetchError }) {
                       <span className="ap-card-date">{fmt(profile.created_at)}</span>
                     </div>
 
-                    {/* Status badge on non-pending tabs */}
-                    {tab !== 'pending' && (
-                      <span className={`ap-status-badge ap-status-${tab}`}>
-                        {tab === 'approved' ? '✅' : '❌'} {tab}
+                    {/* Status badge on approved tab */}
+                    {tab === 'approved' && (
+                      <span className="ap-status-badge ap-status-approved">
+                        ✅ approved
                       </span>
                     )}
 
@@ -401,18 +421,18 @@ export default function AdminPanel({ initialProfiles, fetchError }) {
                         </button>
                       )}
 
-                      {/* Reject / rejection flow (show on pending / approved) */}
-                      {tab !== 'rejected' && !isRejecting && (
+                      {/* Reject = delete permanently */}
+                      {!isRejecting && (
                         <button
                           className="ap-btn ap-btn-reject"
                           disabled={isLoading}
                           onClick={() => { setRejectingId(profile.id); }}
                         >
-                          ❌ Reject
+                          🗑 Delete
                         </button>
                       )}
 
-                      {/* Move back to pending (show on approved / rejected) */}
+                      {/* Move back to pending (show on approved tab only) */}
                       {tab !== 'pending' && (
                         <button
                           className="ap-btn ap-btn-pending"
@@ -434,28 +454,23 @@ export default function AdminPanel({ initialProfiles, fetchError }) {
                       </Link>
                     </div>
 
-                    {/* ── Rejection note form ── */}
+                    {/* ── Delete confirmation ── */}
                     {isRejecting && (
                       <div className="ap-reject-form">
-                        <input
-                          type="text"
-                          className="ap-reject-input"
-                          placeholder="Rejection note (optional)"
-                          value={note}
-                          onChange={e => setRejectNotes(prev => ({ ...prev, [profile.id]: e.target.value }))}
-                          autoFocus
-                        />
+                        <span style={{ fontSize: '0.82rem', color: '#dc2626', fontWeight: 600 }}>
+                          Delete permanently?
+                        </span>
                         <button
                           className="ap-btn-confirm-reject"
                           disabled={isLoading}
-                          onClick={() => updateStatus(profile.id, 'rejected', note || undefined)}
+                          onClick={() => deleteProfile(profile.id)}
                         >
                           {isLoading ? <span className="ap-spinner" /> : null}
-                          Confirm Reject
+                          Yes, Delete
                         </button>
                         <button
                           className="ap-btn-cancel"
-                          onClick={() => { setRejectingId(null); setRejectNotes(prev => { const n = { ...prev }; delete n[profile.id]; return n; }); }}
+                          onClick={() => { setRejectingId(null); }}
                         >
                           Cancel
                         </button>
