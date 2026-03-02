@@ -106,41 +106,27 @@ export default function ProjectSubmitPage() {
     setError('');
 
     try {
-      let photoUrl = null;
-
-      if (photoFile) {
-        const ext = photoFile.name.split('.').pop();
-        const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('project-images')
-          .upload(filename, photoFile, { cacheControl: '3600', upsert: false });
-        if (uploadError) throw uploadError;
-        const { data: { publicUrl } } = supabase.storage
-          .from('project-images')
-          .getPublicUrl(uploadData.path);
-        photoUrl = publicUrl;
-      }
+      // Send everything (including photo file) to the server API.
+      // The server uses the service role key which bypasses all RLS.
+      const fd = new FormData();
+      if (photoFile) fd.append('photo', photoFile);
+      fd.append('title',             formData.title.trim());
+      fd.append('description',       formData.description.trim());
+      fd.append('category',          formData.category);
+      fd.append('date_start',        formData.date_start);
+      fd.append('date_end',          formData.date_end);
+      fd.append('location_city',     formData.location_city.trim());
+      fd.append('location_country',  formData.location_country.trim());
+      fd.append('contact_name',      formData.contact_name.trim());
+      fd.append('contact_email',     formData.contact_email.trim());
+      fd.append('contact_phone',     formData.contact_phone.trim());
+      fd.append('contact_instagram', formData.contact_instagram.trim());
+      fd.append('additional_info',   formData.additional_info.trim());
+      if (profileId) fd.append('profile_id', profileId);
 
       const res = await fetch('/api/projects/submit', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title:            formData.title.trim(),
-          description:      formData.description.trim(),
-          category:         formData.category || null,
-          date_start:       formData.date_start || null,
-          date_end:         formData.date_end   || null,
-          location_city:    formData.location_city.trim()    || null,
-          location_country: formData.location_country.trim() || null,
-          photo_url:        photoUrl,
-          contact_name:     formData.contact_name.trim(),
-          contact_email:    formData.contact_email.trim()    || null,
-          contact_phone:    formData.contact_phone.trim()    || null,
-          contact_instagram: formData.contact_instagram.trim() || null,
-          additional_info:  formData.additional_info.trim()  || null,
-          posted_by_name:   formData.contact_name.trim(),
-          profile_id:       profileId,
-        }),
+        body: fd, // browser sets Content-Type with boundary automatically
       });
 
       const result = await res.json();
