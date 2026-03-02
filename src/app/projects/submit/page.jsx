@@ -121,26 +121,30 @@ export default function ProjectSubmitPage() {
         photoUrl = publicUrl;
       }
 
-      const { error: insertError } = await supabase.from('projects').insert([{
-        title:            formData.title.trim(),
-        description:      formData.description.trim(),
-        category:         formData.category || null,
-        date_start:       formData.date_start || null,
-        date_end:         formData.date_end   || null,
-        location_city:    formData.location_city.trim()    || null,
-        location_country: formData.location_country.trim() || null,
-        photo_url:        photoUrl,
-        contact_name:     formData.contact_name.trim(),
-        contact_email:    formData.contact_email.trim()    || null,
-        contact_phone:    formData.contact_phone.trim()    || null,
-        contact_instagram: formData.contact_instagram.trim() || null,
-        additional_info:  formData.additional_info.trim()  || null,
-        posted_by_name:   formData.contact_name.trim(),
-        profile_id:       profileId,
-        status:           'approved',
-      }]);
+      const res = await fetch('/api/projects/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title:            formData.title.trim(),
+          description:      formData.description.trim(),
+          category:         formData.category || null,
+          date_start:       formData.date_start || null,
+          date_end:         formData.date_end   || null,
+          location_city:    formData.location_city.trim()    || null,
+          location_country: formData.location_country.trim() || null,
+          photo_url:        photoUrl,
+          contact_name:     formData.contact_name.trim(),
+          contact_email:    formData.contact_email.trim()    || null,
+          contact_phone:    formData.contact_phone.trim()    || null,
+          contact_instagram: formData.contact_instagram.trim() || null,
+          additional_info:  formData.additional_info.trim()  || null,
+          posted_by_name:   formData.contact_name.trim(),
+          profile_id:       profileId,
+        }),
+      });
 
-      if (insertError) throw insertError;
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || 'Failed to submit project');
       setSubmitted(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
