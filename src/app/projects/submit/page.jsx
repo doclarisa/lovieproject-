@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
 
@@ -29,7 +28,6 @@ const INITIAL_FORM = {
 };
 
 export default function ProjectSubmitPage() {
-  const router = useRouter();
   const fileInputRef = useRef(null);
 
   const [step, setStep]           = useState(1);
@@ -100,6 +98,10 @@ export default function ProjectSubmitPage() {
     e.preventDefault();
     if (!formData.contact_name.trim()) {
       setError('Please enter your name · Введите ваше имя');
+      return;
+    }
+    if (!formData.contact_email.trim()) {
+      setError('Please enter your email · Введите ваш email');
       return;
     }
     setSubmitting(true);
@@ -566,7 +568,7 @@ export default function ProjectSubmitPage() {
                   <input
                     type="email" name="contact_email"
                     value={formData.contact_email} onChange={handleChange}
-                    className="ps-input" style={inputStyle}
+                    required className="ps-input" style={inputStyle}
                     placeholder="you@example.com"
                   />
                 </div>

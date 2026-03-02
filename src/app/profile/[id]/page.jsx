@@ -411,6 +411,27 @@ export default async function ProfilePage({ params }) {
               </div>
             )}
           </div>
+          {/* Optional photo download */}
+          {profile.photo_url && (
+            <a
+              href={profile.photo_url}
+              download
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'inline-block',
+                marginTop: '0.6rem',
+                fontSize: '0.72rem',
+                color: '#b8aea0',
+                textDecoration: 'underline',
+                textUnderlineOffset: '3px',
+                textAlign: 'center',
+                width: '100%',
+              }}
+            >
+              ↓ Download photo
+            </a>
+          )}
 
           {/* Info */}
           <div className="pp-hero-info">

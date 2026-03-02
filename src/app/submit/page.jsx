@@ -51,6 +51,10 @@ export default function SubmitPage() {
       setError('Please enter your name · Введите ваше имя');
       return;
     }
+    if (!form.email.trim()) {
+      setError('Please enter your email · Введите ваш email');
+      return;
+    }
     setSubmitting(true);
     setError('');
 
@@ -268,10 +272,10 @@ export default function SubmitPage() {
 
               {/* Email */}
               <div>
-                <label style={labelStyle}>Email {optionalBadge}</label>
+                <label style={labelStyle}>Email</label>
                 <input
                   type="email" name="email" value={form.email} onChange={handleChange}
-                  className="sp-input" style={inputStyle}
+                  required className="sp-input" style={inputStyle}
                   placeholder="you@example.com"
                 />
               </div>
@@ -316,7 +320,7 @@ export default function SubmitPage() {
           </div>
 
           <p style={{ textAlign: 'center', marginTop: '1.25rem', fontSize: '0.8rem', color: '#9b9188' }}>
-            Только имя обязательно · Only name is required
+            Имя и email обязательны · Name and email are required
           </p>
         </div>
       </div>
