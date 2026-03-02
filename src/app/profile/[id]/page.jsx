@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { supabase } from '@/lib/supabaseClient';
+import { supabaseAdmin as supabase } from '@/lib/supabaseAdmin';
 import PhotoGallery from '@/components/PhotoGallery';
 
 // Map a tag string to one of the four jewel-tone hero palettes

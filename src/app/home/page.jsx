@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabaseClient';
+import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import GalleryClient from '@/components/GalleryClient';
 
 export const metadata = {
@@ -11,8 +11,10 @@ export const metadata = {
   },
 };
 
+export const dynamic = 'force-dynamic';
+
 export default async function GalleryPage() {
-  const { data: profiles, error } = await supabase
+  const { data: profiles, error } = await supabaseAdmin
     .from('profiles')
     .select('*')
     .eq('status', 'approved')
