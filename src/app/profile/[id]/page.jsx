@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { supabaseAdmin as supabase } from '@/lib/supabaseAdmin';
 import PhotoGallery from '@/components/PhotoGallery';
+import DeleteOwnProfile from '@/components/DeleteOwnProfile';
 
 // Map a tag string to one of the four jewel-tone hero palettes
 const PALETTES = [
@@ -522,6 +523,8 @@ export default async function ProfilePage({ params }) {
             </a>
           </section>
         )}
+
+        <DeleteOwnProfile profileId={profile.id} />
 
         {/* Back link (desktop) */}
         <Link href="/home" className="pp-back">

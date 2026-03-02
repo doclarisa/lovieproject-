@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import DeleteOwnProject from '@/components/DeleteOwnProject';
 
 const CATEGORIES = {
   travel:   { ru: 'Путешествия',  en: 'Travel',     gradient: 'linear-gradient(135deg, #0d4949 0%, #1b7a7b 100%)' },
@@ -372,6 +373,8 @@ export default async function ProjectDetailPage({ params }) {
               </div>
             )}
           </section>
+
+          <DeleteOwnProject projectId={project.id} />
 
           {/* Back link (desktop) */}
           <Link href="/projects" className="pd-back-link">
