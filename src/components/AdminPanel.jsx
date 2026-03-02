@@ -21,18 +21,40 @@ function truncate(str, n = 200) {
 function PhotoThumb({ url, name }) {
   if (url) {
     return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
-        src={url}
-        alt={name}
-        style={{
-          width: '72px', height: '72px',
-          objectFit: 'cover',
-          borderRadius: '0.5rem',
-          flexShrink: 0,
-          display: 'block',
-        }}
-      />
+      <div style={{ flexShrink: 0 }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={url}
+          alt={name}
+          style={{
+            width: '72px', height: '72px',
+            objectFit: 'cover',
+            borderRadius: '0.5rem',
+            display: 'block',
+          }}
+        />
+        <a
+          href={url}
+          download
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: 'block',
+            marginTop: '8px',
+            padding: '8px 16px',
+            backgroundColor: '#0d9488',
+            color: 'white',
+            textAlign: 'center',
+            borderRadius: '6px',
+            textDecoration: 'none',
+            fontWeight: '600',
+            fontSize: '0.7rem',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          ⬇ Download Photo
+        </a>
+      </div>
     );
   }
   return (
@@ -52,7 +74,6 @@ export default function AdminPanel({ initialProfiles, fetchError }) {
   const [profiles,    setProfiles]    = useState(initialProfiles);
   const [tab,         setTab]         = useState('pending');
   const [rejectingId, setRejectingId] = useState(null);
-  const [rejectNotes, setRejectNotes] = useState({});
   const [loadingId,   setLoadingId]   = useState(null);
   const [actionError, setActionError] = useState('');
   const router = useRouter();
@@ -360,7 +381,6 @@ export default function AdminPanel({ initialProfiles, fetchError }) {
             visible.map(profile => {
               const isLoading   = loadingId   === profile.id;
               const isRejecting = rejectingId === profile.id;
-              const note        = rejectNotes[profile.id] ?? '';
 
               return (
                 <div key={profile.id} className="ap-card">
