@@ -391,47 +391,45 @@ export default async function ProfilePage({ params }) {
         <div className="pp-hero-orb" style={{ width: '10rem', height: '10rem', bottom: '2rem', left: '3%' }} />
 
         <div className="pp-hero-inner">
-          {/* Photo */}
-          <div className="pp-photo-wrap">
-            {profile.photo_url ? (
-              <Image
-                src={profile.photo_url}
-                alt={profile.name}
-                fill
-                sizes="(max-width: 768px) 220px, 280px"
-                style={{ objectFit: 'cover' }}
-                priority
-              />
-            ) : (
-              <div
-                className="pp-photo-placeholder"
-                style={{ background: `linear-gradient(135deg, ${pal.mid}99, ${pal.bg})` }}
+          {/* Photo + download link stacked in a column */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0 }}>
+            <div className="pp-photo-wrap">
+              {profile.photo_url ? (
+                <Image
+                  src={profile.photo_url}
+                  alt={profile.name}
+                  fill
+                  sizes="(max-width: 768px) 220px, 280px"
+                  style={{ objectFit: 'cover' }}
+                  priority
+                />
+              ) : (
+                <div
+                  className="pp-photo-placeholder"
+                  style={{ background: `linear-gradient(135deg, ${pal.mid}99, ${pal.bg})` }}
+                >
+                  {profile.name?.trim()?.[0]?.toUpperCase() ?? '?'}
+                </div>
+              )}
+            </div>
+            {profile.photo_url && (
+              <a
+                href={profile.photo_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  marginTop: '0.75rem',
+                  fontSize: '0.72rem',
+                  color: 'rgba(255,255,255,0.6)',
+                  textDecoration: 'underline',
+                  textUnderlineOffset: '3px',
+                  whiteSpace: 'nowrap',
+                }}
               >
-                {profile.name?.trim()?.[0]?.toUpperCase() ?? '?'}
-              </div>
+                ↓ Download photo
+              </a>
             )}
           </div>
-          {/* Optional photo download */}
-          {profile.photo_url && (
-            <a
-              href={profile.photo_url}
-              download
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: 'inline-block',
-                marginTop: '0.6rem',
-                fontSize: '0.72rem',
-                color: '#b8aea0',
-                textDecoration: 'underline',
-                textUnderlineOffset: '3px',
-                textAlign: 'center',
-                width: '100%',
-              }}
-            >
-              ↓ Download photo
-            </a>
-          )}
 
           {/* Info */}
           <div className="pp-hero-info">

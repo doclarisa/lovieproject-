@@ -9,7 +9,7 @@ export async function POST(request) {
       return NextResponse.json({ success: false, error: 'Admin password not configured' }, { status: 500 });
     }
 
-    if (password === correct) {
+    if (password?.trim() === correct) {
       const response = NextResponse.json({ success: true });
       response.cookies.set('lp_admin', 'granted', {
         httpOnly: true,
