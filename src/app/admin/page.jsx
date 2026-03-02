@@ -1,6 +1,8 @@
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import AdminPanel from '@/components/AdminPanel';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminPage() {
   const { data: profiles, error } = await supabaseAdmin
     .from('profiles')

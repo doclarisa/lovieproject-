@@ -11,12 +11,17 @@ export async function POST(request) {
     const { id } = await request.json();
     if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 });
 
-    const { error } = await supabaseAdmin
+    const { data: deleted, error } = await supabaseAdmin
       .from('profiles')
       .delete()
-      .eq('id', id);
+      .eq('id', id)
+      .select('id');
 
     if (error) throw error;
+
+    if (!deleted || deleted.length === 0) {
+      throw new Error(`Profile not found or could not be deleted (id: ${id})`);
+    }
 
     return NextResponse.json({ success: true });
   } catch (err) {
