@@ -96,7 +96,6 @@ export default function AdminPanel({ initialProfiles, fetchError }) {
       if (!res.ok) throw new Error(data.error || `Server error ${res.status}`);
       setProfiles(prev => prev.map(p => p.id === id ? { ...p, status } : p));
       setRejectingId(null);
-      setRejectNotes(prev => { const n = { ...prev }; delete n[id]; return n; });
       router.refresh(); // Re-fetch server data to confirm DB was updated
     } catch (err) {
       setActionError(err.message);
@@ -118,7 +117,6 @@ export default function AdminPanel({ initialProfiles, fetchError }) {
       if (!res.ok) throw new Error(data.error || `Server error ${res.status}`);
       setProfiles(prev => prev.filter(p => p.id !== id));
       setRejectingId(null);
-      setRejectNotes(prev => { const n = { ...prev }; delete n[id]; return n; });
     } catch (err) {
       setActionError(err.message);
     } finally {
