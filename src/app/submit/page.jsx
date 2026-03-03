@@ -1,8 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Link from 'next/link';
-import { supabase } from '@/lib/supabaseClient';
 
 const INITIAL = {
   name: '', tagline: '', bio: '',
@@ -34,15 +33,31 @@ const optionalBadge = (
 );
 
 export default function SubmitPage() {
-  const [form, setForm]         = useState(INITIAL);
+  const [form, setForm]             = useState(INITIAL);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted]   = useState(false);
   const [error, setError]           = useState('');
+  const [photoFile, setPhotoFile]   = useState(null);
+  const [photoPreview, setPhotoPreview] = useState('');
+  const fileInputRef = useRef(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
     setError('');
+  };
+
+  const handlePhotoChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPhotoFile(file);
+    setPhotoPreview(URL.createObjectURL(file));
+  };
+
+  const clearPhoto = () => {
+    setPhotoFile(null);
+    setPhotoPreview('');
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const handleSubmit = async (e) => {
@@ -59,21 +74,13 @@ export default function SubmitPage() {
     setError('');
 
     try {
-      const { error: sbError } = await supabase
-        .from('profiles')
-        .insert([{
-          name:        form.name.trim(),
-          tagline:     form.tagline.trim()     || null,
-          bio:         form.bio.trim()         || null,
-          city:        form.city.trim()        || null,
-          country:     form.country.trim()     || null,
-          email:       form.email.trim()       || null,
-          website_url: form.website_url.trim() || null,
-          instagram:   form.instagram.trim()   || null,
-          status:      'pending',
-        }]);
+      const fd = new FormData();
+      Object.entries(form).forEach(([k, v]) => fd.append(k, v));
+      if (photoFile) fd.append('photo', photoFile);
 
-      if (sbError) throw sbError;
+      const res = await fetch('/api/profiles/submit', { method: 'POST', body: fd });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Submission failed');
 
       setSubmitted(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -298,6 +305,58 @@ export default function SubmitPage() {
                   className="sp-input" style={inputStyle}
                   placeholder="https://yourwebsite.com"
                 />
+              </div>
+
+              {/* Photo */}
+              <div>
+                <label style={labelStyle}>Фото · Photo {optionalBadge}</label>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handlePhotoChange}
+                  style={{ display: 'none' }}
+                />
+                {!photoPreview ? (
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    style={{
+                      width: '100%', boxSizing: 'border-box',
+                      padding: '1.5rem 1rem',
+                      border: '2px dashed #c8c0b8', borderRadius: '0.625rem',
+                      background: '#faf8f5', color: '#9b9188',
+                      fontSize: '0.875rem', cursor: 'pointer',
+                      textAlign: 'center', lineHeight: 1.5,
+                    }}
+                  >
+                    Нажмите чтобы загрузить фото · Click to upload a photo
+                  </button>
+                ) : (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    <img
+                      src={photoPreview}
+                      alt="preview"
+                      style={{
+                        width: '80px', height: '80px',
+                        objectFit: 'cover', borderRadius: '0.5rem',
+                        border: '2px solid #e5e0d8',
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={clearPhoto}
+                      style={{
+                        padding: '0.45rem 0.9rem',
+                        background: '#1b7a7b', color: 'white',
+                        border: 'none', borderRadius: '0.375rem',
+                        fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer',
+                      }}
+                    >
+                      ✕ Удалить · Clear
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* Error */}
